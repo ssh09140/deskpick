@@ -1,0 +1,5 @@
+project_id = "deskpick"
+
+[functions.delete-account]
+# The handler independently verifies the user's access token with Auth.getUser.
+verify_jwt = false
