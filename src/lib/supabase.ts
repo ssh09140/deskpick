@@ -3,6 +3,7 @@ import { parseSetup, type DeskSetup, type SavedSetup } from './desk';
 
 const url = import.meta.env.VITE_SUPABASE_URL;
 const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+const authStorageKey = url ? `sb-${new URL(url).hostname.split('.')[0]}-auth-token` : '';
 export const supabase = url && key ? createClient(url, key) : null;
 
 export function requireClient() {
@@ -37,6 +38,25 @@ export async function deleteSetup(userId: string) {
   const { client } = await requireUser(userId);
   const { error } = await client.from('desk_setups').delete().eq('user_id', userId);
   if (error) throw error;
+}
+export async function deleteOwnAccount(userId: string) {
+  const { client } = await requireUser(userId);
+  const { data, error } = await client.functions.invoke('delete-account', {
+    method: 'POST', body: { confirmation: 'DELETE_MY_ACCOUNT' },
+  });
+  if (error) {
+    const status = error.context instanceof Response ? error.context.status : 0;
+    if (status === 401) throw new Error('로그인이 만료되었어요. 다시 로그인한 뒤 탈퇴해 주세요.');
+    if (status === 404) throw new Error('현재 회원 탈퇴를 연결하지 못했어요. ssh09140@naver.com으로 문의해 주세요.');
+    throw new Error('탈퇴 완료를 확인하지 못했어요. 다시 로그인해 계정 상태를 확인하거나 ssh09140@naver.com으로 문의해 주세요.');
+  }
+  if (data?.deleted !== true) throw new Error('탈퇴 완료를 확인하지 못했어요. 잠시 후 다시 시도해 주세요.');
+  // Remote deletion succeeded; a local sign-out problem must not imply deletion failed.
+  try { await client.auth.signOut({ scope: 'local' }); } catch { /* Deletion is already complete. */ }
+  try {
+    localStorage.removeItem(authStorageKey);
+    localStorage.removeItem(`${authStorageKey}-code-verifier`);
+  } catch { /* Browser storage can be unavailable; clear in-memory UI state as well. */ }
 }
 export function friendlyError(error: unknown): string {
   const raw = error instanceof Error ? error.message : String((error as { message?: string })?.message ?? '');

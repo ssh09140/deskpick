@@ -11,6 +11,7 @@ type Context = {
   user: User | null; authReady: boolean; authMode: AuthMode | null;
   setAuthMode: Dispatch<SetStateAction<AuthMode | null>>;
   notify: (message: string) => void;
+  forgetDeletedAccount: () => void;
 };
 const AppContext = createContext<Context | null>(null);
 export const useApp = () => {
@@ -50,7 +51,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
     return () => data.subscription.unsubscribe();
   }, []);
-  return <AppContext.Provider value={{ setup, setSetup, selectedId, setSelectedId, user, authReady, authMode, setAuthMode, notify }}>
+  function forgetDeletedAccount() {
+    setUser(null); setAuthMode(null); setSelectedId(null); setSetup(emptySetup());
+  }
+  return <AppContext.Provider value={{ setup, setSetup, selectedId, setSelectedId, user, authReady, authMode, setAuthMode, notify, forgetDeletedAccount }}>
     {children}
     <div className={`toast-message ${toast ? 'visible' : ''}`} role="status" aria-live="polite">{toast}</div>
   </AppContext.Provider>;

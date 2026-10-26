@@ -1,9 +1,17 @@
 import productData from '../data/products.json';
+import legacyData from '../data/legacy-products.json';
 
-export type Product = (typeof productData)[number];
+export type Product = {
+  id: string; name: string; cat: number; price: number; w: number; d: number;
+  type: string; desc: string; tag: string; why: string; sample: boolean;
+  seller_name: string | null; seller_url: string | null; price_checked_at: string | null;
+  image_source: string; manufacturer_code?: string; dimension_note?: string;
+};
 export const products: Product[] = productData;
 export const categories = ['전체', '모니터 받침대', '키보드 · 마우스', '조명', '데스크매트', '수납 · 정리', '데스크 소품'];
-export const productById = new Map(products.map(p => [p.id, p]));
+// Keep old sample identities and dimensions for saved layouts; do not silently replace them.
+export const productById = new Map<string, Product>([...legacyData, ...products].map(p => [p.id, p]));
+export const availableCategories = categories.map((name, id) => ({ name, id })).filter(c => c.id === 0 || products.some(p => p.cat === c.id));
 export type DeskItem = { instance_id: string; product_id: string; x_mm: number; y_mm: number };
 export type DeskSetup = { desk_width_mm: number; desk_depth_mm: number; items: DeskItem[] };
 export type SavedSetup = DeskSetup & { user_id: string; created_at: string; updated_at: string };
