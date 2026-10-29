@@ -4,5 +4,6 @@ import { BrowserRouter } from 'react-router-dom';
 import { AppProvider } from './context';
 import App from './App';
 import './styles.css';
+import './redesign.css';
 
 createRoot(document.getElementById('root')!).render(<StrictMode><BrowserRouter><AppProvider><App /></AppProvider></BrowserRouter></StrictMode>);

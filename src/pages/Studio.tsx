@@ -42,6 +42,7 @@ export function Studio() {
       </aside>
       <section className="canvas-panel"><div className="canvas-toolbar"><div><h2>책상 크기 설정</h2><p>책상 상판의 가로와 깊이를 입력해 주세요.</p></div><span className="top-view-badge">TOP VIEW</span></div><form className="dimensions" onSubmit={resize}><label>가로 (mm)<input aria-label="책상 가로 (mm)" type="number" min="100" max="10000" step="1" required value={width} onChange={e => setWidth(e.target.value)} /></label><span className="dimension-times">×</span><label>깊이 (mm)<input aria-label="책상 깊이 (mm)" type="number" min="100" max="10000" step="1" required value={depth} onChange={e => setDepth(e.target.value)} /></label><button className="btn" type="submit">적용</button></form>
         <DeskCanvas />
+        <div className="canvas-quick-actions"><button className="btn primary" onClick={() => { setSearch(''); setAddOpen(true); }}><Plus size={16} /> 제품 추가</button><Link className="btn" to="/guide">사용 가이드 <ArrowUpRight size={16} /></Link></div>
         <div className="canvas-hint"><Move size={16} /><p>제품을 드래그해 이동하세요.<br />방향키로 10 mm씩, Shift + 방향키로 50 mm씩 조정할 수 있어요.</p></div>
         {warnings.length > 0 && <div className="status warn" role="status"><Info size={15} /> {warnings.length}개 제품이 책상 영역을 벗어났어요. 목록에서 선택해 위치를 조정해 주세요.</div>}
       </section>

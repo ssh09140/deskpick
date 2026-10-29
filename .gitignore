@@ -9,3 +9,4 @@ dist/
 reference/
 coverage/
 supabase/.temp/
+design/

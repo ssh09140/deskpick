@@ -1,12 +1,13 @@
 import { useState, type FormEvent } from 'react';
 import { ArrowRight, Check, Mail, Eye, EyeOff } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useApp, type AuthMode } from '../context';
 import { friendlyError, requireClient } from '../lib/supabase';
 import { Modal } from './Modal';
 
-export function AuthDialog() {
-  const { authMode: mode, setAuthMode, notify } = useApp();
+export function AuthDialog({ pageMode }: { pageMode?: AuthMode }) {
+  const navigate = useNavigate();
+  const { authMode, setAuthMode, notify } = useApp();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -14,9 +15,11 @@ export function AuthDialog() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [sent, setSent] = useState(false);
+  const mode = pageMode ?? authMode;
   if (!mode) return null;
-  const close = () => { if (!busy) setAuthMode(null); };
-  const switchMode = (next: AuthMode) => { setAuthMode(next); setError(''); setPassword(''); setConfirm(''); setSent(false); };
+  const close = () => { if (!busy) { setAuthMode(null); if (pageMode) navigate('/'); } };
+  const paths = { login: '/login', signup: '/signup', recover: '/forgot-password', reset: '/auth/callback' };
+  const switchMode = (next: AuthMode) => { if (pageMode) navigate(paths[next]); else setAuthMode(next); setError(''); setPassword(''); setConfirm(''); setSent(false); };
   async function submit(event: FormEvent) {
     event.preventDefault();
     if (busy) return;
@@ -31,10 +34,11 @@ export function AuthDialog() {
         if (error) throw error;
         setAuthMode(null);
         notify('로그인했어요. 현재 배치를 계정에 저장할 수 있어요.');
+        if (pageMode) navigate('/account');
       } else if (mode === 'signup') {
         const { data, error } = await client.auth.signUp({ email: email.trim(), password, options: { emailRedirectTo: redirectTo } });
         if (error) throw error;
-        if (data.session) { setAuthMode(null); notify('회원가입이 완료되었어요.'); }
+        if (data.session) { setAuthMode(null); notify('회원가입이 완료되었어요.'); if (pageMode) navigate('/account'); }
         else setSent(true);
       } else if (mode === 'recover') {
         const { error } = await client.auth.resetPasswordForEmail(email.trim(), { redirectTo });
@@ -59,13 +63,14 @@ export function AuthDialog() {
     } catch (err) { setError(friendlyError(err)); } finally { setBusy(false); }
   }
   const title = mode === 'signup' ? '나만의 책상을\n오래 간직하세요.' : mode === 'recover' ? '비밀번호를 잊으셨나요?' : mode === 'reset' ? '새 비밀번호를 설정하세요.' : '다시 만나서 반가워요.';
-  return <Modal title={sent ? '이메일 확인 안내' : title} onClose={close}>
-    <div className="logo auth-logo">deskpick<span>●</span></div>
+  const content = <>
+    <div className="logo auth-logo">DeskPick</div>
     {sent ? <>
       <div className="auth-mark"><Mail size={26} /></div>
       <h2>이메일을 확인해 주세요.</h2>
       <p className="auth-copy"><strong>{email}</strong><br />{mode === 'recover' ? '가입된 이메일이면 비밀번호 재설정 링크를 보내드려요.' : '가입 확인이 필요한 경우 확인 링크를 보내드려요. 이미 가입한 이메일이라면 로그인해 주세요.'}<br />받은 편지함과 스팸함을 확인해 주세요.</p>
       <button className="btn primary full" onClick={() => switchMode('login')}>로그인으로 돌아가기 <ArrowRight size={16} /></button>
+      {mode === 'signup' && <button className="text-btn full" disabled={busy} onClick={resend}>인증 메일 다시 보내기</button>}
       <p className="auth-copy" style={{ marginTop: 18 }}>현재 꾸민 책상은 이 탭에 유지돼요.</p>
     </> : <>
       <p className="eyebrow">좋아하는 책상을, 그대로</p>
@@ -85,5 +90,6 @@ export function AuthDialog() {
       <div className="auth-benefit"><Check size={15} /> 로그인 전후에도 현재 배치는 그대로 유지돼요.</div>
       <button className="text-btn full" disabled={busy} onClick={close}>계속 둘러보기</button>
     </>}
-  </Modal>;
+  </>;
+  return pageMode ? <div className="auth-page"><section className="auth-page-card" aria-label={sent ? "이메일 확인 안내" : title}>{content}</section></div> : <Modal title={sent ? "이메일 확인 안내" : title} onClose={close}>{content}</Modal>;
 }
