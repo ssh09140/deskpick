@@ -1,4 +1,5 @@
-import { createContext, useContext, useEffect, useRef, useState, type ReactNode, type Dispatch, type SetStateAction } from 'react';
+import { createContext, useContext, useEffect, useRef, useState, useReducer, type ReactNode, type Dispatch, type SetStateAction } from 'react';
+import { createHistory, deskHistory } from './lib/history';
 import type { User } from '@supabase/supabase-js';
 import { emptySetup, parseSetup, type DeskSetup } from './lib/desk';
 import { supabase } from './lib/supabase';
@@ -7,6 +8,8 @@ const DRAFT_KEY = 'deskpick.draft.v1';
 export type AuthMode = 'login' | 'signup' | 'recover' | 'reset';
 type Context = {
   setup: DeskSetup; setSetup: Dispatch<SetStateAction<DeskSetup>>;
+  undo: () => void; redo: () => void; canUndo: boolean; canRedo: boolean;
+  beginEdit: () => void; endEdit: () => void;
   selectedId: string | null; setSelectedId: Dispatch<SetStateAction<string | null>>;
   user: User | null; authReady: boolean; authMode: AuthMode | null;
   setAuthMode: Dispatch<SetStateAction<AuthMode | null>>;
@@ -20,9 +23,15 @@ export const useApp = () => {
   return context;
 };
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [setup, setSetup] = useState<DeskSetup>(() => {
-    try { const raw = sessionStorage.getItem(DRAFT_KEY); return raw ? parseSetup(JSON.parse(raw)) : emptySetup(); } catch { return emptySetup(); }
+  const [edits, dispatch] = useReducer(deskHistory, undefined, () => {
+    try { const raw = sessionStorage.getItem(DRAFT_KEY); return createHistory(raw ? parseSetup(JSON.parse(raw)) : emptySetup()); } catch { return createHistory(emptySetup()); }
   });
+  const setup = edits.present;
+  const setSetup: Dispatch<SetStateAction<DeskSetup>> = value => dispatch({ type: 'set', value });
+  const beginEdit = () => dispatch({ type: 'begin' });
+  const endEdit = () => dispatch({ type: 'end' });
+  const undo = () => dispatch({ type: 'undo' });
+  const redo = () => dispatch({ type: 'redo' });
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [authReady, setAuthReady] = useState(!supabase);
@@ -52,9 +61,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return () => data.subscription.unsubscribe();
   }, []);
   function forgetDeletedAccount() {
-    setUser(null); setAuthMode(null); setSelectedId(null); setSetup(emptySetup());
+    setUser(null); setAuthMode(null); setSelectedId(null); dispatch({ type: 'reset', value: emptySetup() });
   }
-  return <AppContext.Provider value={{ setup, setSetup, selectedId, setSelectedId, user, authReady, authMode, setAuthMode, notify, forgetDeletedAccount }}>
+  return <AppContext.Provider value={{ setup, setSetup, undo, redo, canUndo: edits.past.length > 0 || !!edits.start && edits.start !== setup, canRedo: edits.future.length > 0 && !edits.start, beginEdit, endEdit, selectedId, setSelectedId, user, authReady, authMode, setAuthMode, notify, forgetDeletedAccount }}>
     {children}
     <div className={`toast-message ${toast ? 'visible' : ''}`} role="status" aria-live="polite">{toast}</div>
   </AppContext.Provider>;

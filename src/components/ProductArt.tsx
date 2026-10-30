@@ -1,7 +1,12 @@
+import { useState } from 'react';
 import { art, topArt } from '../lib/art';
 import type { Product } from '../lib/desk';
 export function ProductArt({ product, type, top = false }: { product?: Product; type?: string; top?: boolean }) {
+  const [failedUrl, setFailedUrl] = useState<string | null>(null);
   const chosenType = product?.type ?? type ?? 'stand';
+  if (!top && product?.image_url && failedUrl !== product.image_url) {
+    return <img className="product-photo" src={product.image_url} alt={product.name} loading="lazy" decoding="async" onError={() => setFailedUrl(product.image_url!)} />;
+  }
   if (product && !product.sample) {
     const scale = Math.min(220 / product.w, 140 / product.d);
     const w = product.w * scale, h = product.d * scale;

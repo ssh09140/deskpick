@@ -1,8 +1,8 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ArrowUpRight, Plus, Trash2, Move, Check, Info, RotateCcw } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, Plus, Trash2, Move, Check, Info, RotateCcw, RotateCw, Undo2, Redo2 } from 'lucide-react';
 import { useApp } from '../context';
-import { isOutside, money, newItem, productById, products, totalPrice, type DeskItem } from '../lib/desk';
+import { footprint, rotateItem, isOutside, money, newItem, productById, products, totalPrice, type DeskItem } from '../lib/desk';
 import { ProductArt } from '../components/ProductArt';
 import { Modal } from '../components/Modal';
 import { DeskCanvas } from '../components/DeskCanvas';
@@ -17,7 +17,7 @@ function PositionEditor({ item }: { item: DeskItem }) {
   return <form className="position-form" onSubmit={submit}><label>X 위치 (mm)<input type="number" step="any" required value={x} onChange={e => setX(e.target.value)} /></label><label>Y 위치 (mm)<input type="number" step="any" required value={y} onChange={e => setY(e.target.value)} /></label><button className="btn" type="submit">위치 적용</button></form>;
 }
 export function Studio() {
-  const { setup, setSetup, selectedId, setSelectedId, notify } = useApp();
+  const { setup, setSetup, selectedId, setSelectedId, notify, undo, redo, canUndo, canRedo } = useApp();
   const [width, setWidth] = useState(String(setup.desk_width_mm));
   const [depth, setDepth] = useState(String(setup.desk_depth_mm));
   const [addOpen, setAddOpen] = useState(false);
@@ -26,6 +26,16 @@ export function Studio() {
   useEffect(() => { setWidth(String(setup.desk_width_mm)); setDepth(String(setup.desk_depth_mm)); }, [setup.desk_width_mm, setup.desk_depth_mm]);
   const selected = setup.items.find(i => i.instance_id === selectedId);
   const selectedProduct = selected ? productById.get(selected.product_id) : null;
+  useEffect(() => {
+    const shortcut = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (!(e.metaKey || e.ctrlKey) || e.altKey || target.closest('input, textarea, select, [contenteditable], [role="dialog"]') || document.querySelector('[role="dialog"]')) return;
+      if (e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) redo(); else undo(); }
+      else if (e.key.toLowerCase() === 'y') { e.preventDefault(); redo(); }
+    };
+    window.addEventListener('keydown', shortcut);
+    return () => window.removeEventListener('keydown', shortcut);
+  }, [undo, redo]);
   const warnings = setup.items.filter(i => isOutside(i, setup));
   function resize(e: FormEvent) { e.preventDefault(); const w = Number(width), d = Number(depth); if (!Number.isInteger(w) || !Number.isInteger(d) || w < 100 || w > 10000 || d < 100 || d > 10000) return; setSetup(s => ({ ...s, desk_width_mm: w, desk_depth_mm: d })); notify('책상 크기를 변경했어요. 제품의 실제 크기와 위치는 유지됩니다.'); }
   function add(id: string) { const item = newItem(productById.get(id)!, setup); setSetup(s => ({ ...s, items: [...s.items, item] })); setSelectedId(item.instance_id); setAddOpen(false); notify('제품을 추가했어요.'); }
@@ -41,13 +51,19 @@ export function Studio() {
         </div><button className="btn" onClick={() => { setSearch(''); setAddOpen(true); }}><Plus size={16} /> 제품 추가</button><Link className="text-btn full discovery-return" to="/products">제품 탐색에서 더 찾아보기 ↗</Link>
       </aside>
       <section className="canvas-panel"><div className="canvas-toolbar"><div><h2>책상 크기 설정</h2><p>책상 상판의 가로와 깊이를 입력해 주세요.</p></div><span className="top-view-badge">TOP VIEW</span></div><form className="dimensions" onSubmit={resize}><label>가로 (mm)<input aria-label="책상 가로 (mm)" type="number" min="100" max="10000" step="1" required value={width} onChange={e => setWidth(e.target.value)} /></label><span className="dimension-times">×</span><label>깊이 (mm)<input aria-label="책상 깊이 (mm)" type="number" min="100" max="10000" step="1" required value={depth} onChange={e => setDepth(e.target.value)} /></label><button className="btn" type="submit">적용</button></form>
+        <div className="edit-actions" role="group" aria-label="배치 편집">
+          <button className="btn" disabled={!canUndo} onClick={undo} title="Ctrl/Cmd + Z"><Undo2 size={17} /> 실행 취소</button>
+          <button className="btn" disabled={!canRedo} onClick={redo} title="Ctrl/Cmd + Shift + Z"><Redo2 size={17} /> 다시 실행</button>
+          <button className="btn" disabled={!selected} onClick={() => setSetup(s => ({ ...s, items: s.items.map(i => i.instance_id === selectedId ? rotateItem(i) : i) }))}><RotateCw size={17} /> 90° 회전</button>
+          <span>{selected ? `선택 제품 ${selected.rotation ?? 0}°` : '회전할 제품을 선택하세요'}</span>
+        </div>
         <DeskCanvas />
         <div className="canvas-quick-actions"><button className="btn primary" onClick={() => { setSearch(''); setAddOpen(true); }}><Plus size={16} /> 제품 추가</button><Link className="btn" to="/guide">사용 가이드 <ArrowUpRight size={16} /></Link></div>
         <div className="canvas-hint"><Move size={16} /><p>제품을 드래그해 이동하세요.<br />방향키로 10 mm씩, Shift + 방향키로 50 mm씩 조정할 수 있어요.</p></div>
         {warnings.length > 0 && <div className="status warn" role="status"><Info size={15} /> {warnings.length}개 제품이 책상 영역을 벗어났어요. 목록에서 선택해 위치를 조정해 주세요.</div>}
       </section>
       <aside className="panel layout-info"><div className="price-summary"><div className="summary-caption"><strong>총 예상 가격</strong><span>제품 {setup.items.length}개</span></div><div className="total-price" aria-live="polite">{money(totalPrice(setup.items))}</div><p>{setup.items.some(i => productById.get(i.product_id)?.sample) ? '기존 예시 상품 가격이 포함된 합계예요.' : '확인일 기준 합계 · 실시간 가격이 아니에요.'}<br />배송비와 할인은 포함하지 않습니다.</p></div><h2>배치 정보</h2>
-        {selected && selectedProduct ? <><div className="info-product-art"><ProductArt product={selectedProduct} /></div><h3>{selectedProduct.name}</h3><p className="info-dim">가로 {selectedProduct.w} mm · 깊이 {selectedProduct.d} mm</p><PositionEditor key={selected.instance_id} item={selected} /><div className={`status ${isOutside(selected, setup) ? 'warn' : ''}`}>{isOutside(selected, setup) ? <><Info size={14} /> 책상 영역을 벗어났어요</> : <><Check size={14} /> 책상 안에 배치되었어요</>}</div><button className="text-btn" onClick={() => setSetup(s => ({ ...s, items: s.items.map(i => i.instance_id === selected.instance_id ? { ...i, x_mm: Math.round((s.desk_width_mm - selectedProduct.w) / 2), y_mm: Math.round((s.desk_depth_mm - selectedProduct.d) / 2) } : i) }))}>책상 가운데로 이동</button><Link className="btn" to={`/products/${selectedProduct.id}`}>제품 상세보기 <ArrowUpRight size={15} /></Link></> : <div className="selection-placeholder"><Move size={24} /><p>제품을 선택하면 크기와<br />배치 상태를 확인할 수 있어요.</p></div>}
+        {selected && selectedProduct ? <><div className="info-product-art"><ProductArt product={selectedProduct} /></div><h3>{selectedProduct.name}</h3><p className="info-dim">배치 가로 {footprint(selected).w} mm · 깊이 {footprint(selected).d} mm · {selected.rotation ?? 0}°</p>{selectedProduct.dimension_note && <p className="info-dim">{selectedProduct.dimension_note}</p>}<PositionEditor key={selected.instance_id} item={selected} /><div className={`status ${isOutside(selected, setup) ? 'warn' : ''}`}>{isOutside(selected, setup) ? <><Info size={14} /> 책상 영역을 벗어났어요</> : <><Check size={14} /> 책상 안에 배치되었어요</>}</div><button className="text-btn" onClick={() => setSetup(s => ({ ...s, items: s.items.map(i => i.instance_id === selected.instance_id ? { ...i, x_mm: Math.round((s.desk_width_mm - footprint(i).w) / 2), y_mm: Math.round((s.desk_depth_mm - footprint(i).d) / 2) } : i) }))}>책상 가운데로 이동</button><Link className="btn" to={`/products/${selectedProduct.id}`}>제품 상세보기 <ArrowUpRight size={15} /></Link></> : <div className="selection-placeholder"><Move size={24} /><p>제품을 선택하면 크기와<br />배치 상태를 확인할 수 있어요.</p></div>}
         <p className="mobile-help">위에서 본 설치 면적을 같은 축척으로 비교해요. 제품 높이, 물체 간 겹침, 케이블 공간은 별도로 확인해 주세요.</p>
       </aside>
     </div>

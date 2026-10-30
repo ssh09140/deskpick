@@ -20,6 +20,15 @@ beforeEach(() => {
   mock.query.maybeSingle.mockResolvedValue({ data: saved, error: null });
 });
 describe('account-scoped persistence (mocked SDK, not live RLS)', () => {
+  it('keeps rotation in both the saved payload and the fetched layout', async () => {
+    const items = [{ instance_id: 'rotated', product_id: 'apple-mxcl3kh', x_mm: 82.5, y_mm: 10.25, rotation: 90 as const }];
+    const row = { ...saved, items };
+    mock.query.single.mockResolvedValue({ data: row, error: null });
+    mock.query.maybeSingle.mockResolvedValue({ data: row, error: null });
+    expect(await saveSetup('user-a', { ...emptySetup(), items })).toEqual(row);
+    expect(mock.query.upsert).toHaveBeenCalledWith({ user_id: 'user-a', ...emptySetup(), items }, { onConflict: 'user_id' });
+    expect((await fetchSetup('user-a'))?.items).toEqual(items);
+  });
   it('refuses writes if the signed-in user changed', async () => {
     await expect(saveSetup('user-b', emptySetup())).rejects.toThrow('다시 로그인');
     expect(mock.client.from).not.toHaveBeenCalled();

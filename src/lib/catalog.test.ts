@@ -4,12 +4,13 @@ import { products, productById, parseSetup, emptySetup } from './desk';
 describe('published catalogue and legacy saved layouts', () => {
   it('only publishes sourced real products with usable links and dimensions', () => {
     expect(products.length).toBeGreaterThanOrEqual(12);
-    expect(new Set(products.map(p => p.cat)).size).toBeGreaterThanOrEqual(3);
+    expect(new Set(products.map(p => p.cat)).size).toBe(6);
     expect(new Set(products.map(p => p.id)).size).toBe(products.length);
     for (const p of products) {
       expect(p.sample).toBe(false);
-      expect(new URL(p.seller_url!).hostname).toBe('www.ikea.com');
-      expect(p.seller_url).toContain(p.manufacturer_code);
+      expect(['www.ikea.com', 'www.apple.com']).toContain(new URL(p.seller_url!).hostname);
+      expect(new URL(p.seller_url!).protocol).toBe('https:');
+      expect(p.seller_url!.toLowerCase()).toContain(p.manufacturer_code!.toLowerCase().split('/')[0]);
       expect(p.price_checked_at).toMatch(/^\d{4}-\d{2}-\d{2}$/);
       expect(p.w).toBeGreaterThan(0);
       expect(p.d).toBeGreaterThan(0);
