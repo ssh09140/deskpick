@@ -3,6 +3,7 @@ import { Download, FolderOpen, ArrowRight, Trash2, Check } from 'lucide-react';
 import { useApp } from '../context';
 import { deleteSetup, fetchSetup, friendlyError, saveSetup } from '../lib/supabase';
 import { money, sameSetup, totalPrice, type DeskSetup, type SavedSetup } from '../lib/desk';
+import { ErrorNotice } from './ErrorNotice';
 import { Modal } from './Modal';
 import { DeskPreview } from './DeskCanvas';
 
@@ -12,6 +13,8 @@ export function SaveControls() {
   const [busy, setBusy] = useState(false);
   const [dialog, setDialog] = useState<Dialog | null>(null);
   const [error, setError] = useState('');
+  const [failedRequest, setFailedRequest] = useState<'save' | 'load'>('save');
+  const errorOwner = useRef<string | undefined>(undefined);
   const [lastSaved, setLastSaved] = useState<SavedSetup | null>(null);
   const owner = useRef(user?.id);
   owner.current = user?.id;
@@ -25,6 +28,8 @@ export function SaveControls() {
     if (!user) { setAuthMode('login'); notify('로그인 후 저장하거나 불러올 수 있어요. 현재 배치는 유지돼요.'); return; }
     const userId = user.id;
     const draft = structuredClone(setup);
+    setFailedRequest(action);
+    errorOwner.current = userId;
     setBusy(true); setError('');
     try {
       const saved = await fetchSetup(userId);
@@ -44,6 +49,7 @@ export function SaveControls() {
   async function commit(action: 'save' | 'delete') {
     if (!user || !activeDialog || busy) return;
     const userId = user.id;
+    errorOwner.current = userId;
     setBusy(true); setError('');
     try {
       if (action === 'save' && activeDialog.type === 'overwrite') {
@@ -62,7 +68,7 @@ export function SaveControls() {
   const date = (data: SavedSetup) => new Date(data.updated_at).toLocaleString('ko-KR', { month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
   return <>
     <section className="desk-save-bar"><div className="desk-save-copy"><span className="eyebrow">나의 책상, 다음에도 그대로</span><h2>내 데스크 구성 {isSynced && <Check size={17} />}</h2><p>{isSynced ? `${date(savedForUser!)}에 저장한 구성과 같아요.` : '좋아하는 배치를 저장하고, 다음에도 이어서 꾸며보세요.'}</p></div><div className="save-actions"><button className="btn" disabled={busy || !authReady} onClick={() => request('load')}><FolderOpen size={16} /> 저장한 구성</button><button className="btn primary" disabled={busy || !authReady} onClick={() => request('save')}>{busy ? '처리 중…' : '내 데스크 저장'} <Download size={16} /></button></div></section>
-    {error && !activeDialog && <p className="inline-error" role="alert">{error}<button className="text-btn" onClick={() => setError('')}>닫기</button></p>}
+    {error && errorOwner.current === user?.id && !activeDialog && <ErrorNotice title={failedRequest === 'save' ? '저장을 완료하지 못했어요' : '저장한 구성을 불러오지 못했어요'} message={`${error} 현재 편집 중인 배치는 유지됩니다.`} onRetry={() => request(failedRequest)} busy={busy} onDismiss={() => setError('')} />}
     {activeDialog && <Modal title="내 데스크 저장 관리" onClose={close}>
       <p className="eyebrow">MY DESK</p>
       {activeDialog.type === 'saved' && (activeDialog.data ? <>

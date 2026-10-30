@@ -3,6 +3,7 @@ import { ArrowRight, Check, Mail, Eye, EyeOff } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useApp, type AuthMode } from '../context';
 import { friendlyError, requireClient } from '../lib/supabase';
+import { ErrorNotice } from './ErrorNotice';
 import { Modal } from './Modal';
 
 export function AuthDialog({ pageMode }: { pageMode?: AuthMode }) {
@@ -69,8 +70,9 @@ export function AuthDialog({ pageMode }: { pageMode?: AuthMode }) {
       <div className="auth-mark"><Mail size={26} /></div>
       <h2>이메일을 확인해 주세요.</h2>
       <p className="auth-copy"><strong>{email}</strong><br />{mode === 'recover' ? '가입된 이메일이면 비밀번호 재설정 링크를 보내드려요.' : '가입 확인이 필요한 경우 확인 링크를 보내드려요. 이미 가입한 이메일이라면 로그인해 주세요.'}<br />받은 편지함과 스팸함을 확인해 주세요.</p>
-      <button className="btn primary full" onClick={() => switchMode('login')}>로그인으로 돌아가기 <ArrowRight size={16} /></button>
+      <button className="btn primary full" disabled={busy} onClick={() => switchMode('login')}>로그인으로 돌아가기 <ArrowRight size={16} /></button>
       {mode === 'signup' && <button className="text-btn full" disabled={busy} onClick={resend}>인증 메일 다시 보내기</button>}
+      {error && <ErrorNotice title="메일을 다시 보내지 못했어요" message={error} onRetry={resend} busy={busy} />}
       <p className="auth-copy" style={{ marginTop: 18 }}>현재 꾸민 책상은 이 탭에 유지돼요.</p>
     </> : <>
       <p className="eyebrow">좋아하는 책상을, 그대로</p>
@@ -81,7 +83,7 @@ export function AuthDialog({ pageMode }: { pageMode?: AuthMode }) {
         {mode !== 'reset' && <label className="field">이메일<input type="email" autoComplete="email" placeholder="you@example.com" required value={email} onChange={e => setEmail(e.target.value)} disabled={busy} /></label>}
         {mode !== 'recover' && <label className="field">{mode === 'reset' ? '새 비밀번호' : '비밀번호'}<span className="password-input"><input type={visible ? 'text' : 'password'} required minLength={mode === 'login' ? 1 : 8} autoComplete={mode === 'login' ? 'current-password' : 'new-password'} placeholder={mode === 'login' ? '비밀번호를 입력해 주세요' : '8자 이상 입력해 주세요'} value={password} onChange={e => setPassword(e.target.value)} disabled={busy} /><button type="button" onClick={() => setVisible(!visible)} aria-label={visible ? '비밀번호 숨기기' : '비밀번호 보기'}>{visible ? <EyeOff size={17} /> : <Eye size={17} />}</button></span></label>}
         {(mode === 'signup' || mode === 'reset') && <label className="field">비밀번호 확인<input type="password" required minLength={8} autoComplete="new-password" placeholder="한 번 더 입력해 주세요" value={confirm} onChange={e => setConfirm(e.target.value)} disabled={busy} /></label>}
-        {mode === 'signup' && <label className="consent"><input type="checkbox" required /> <span><Link to="/privacy" target="_blank">개인정보 처리방침</Link>를 읽고 계정 생성에 동의합니다.</span></label>}
+        {mode === 'signup' && <label className="consent"><input type="checkbox" required disabled={busy} /> <span>[필수] <Link to="/terms" target="_blank" rel="noopener noreferrer">이용약관</Link>에 동의하고, <Link to="/privacy" target="_blank" rel="noopener noreferrer">개인정보 처리방침</Link>을 확인했습니다.</span></label>}
         <p className="form-error" role="alert">{error}</p>
         <button className="btn primary full" disabled={busy} type="submit">{busy ? '처리 중…' : mode === 'signup' ? '이메일로 회원가입' : mode === 'recover' ? '재설정 링크 받기' : mode === 'reset' ? '비밀번호 변경' : '로그인'}{!busy && <ArrowRight size={16} />}</button>
       </form>
