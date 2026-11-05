@@ -2,7 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowUpRight, Plus, Trash2, Move, Check, Info, RotateCcw, RotateCw, Undo2, Redo2 } from 'lucide-react';
 import { useApp } from '../context';
-import { footprint, rotateItem, isOutside, money, newItem, productById, products, totalPrice, type DeskItem } from '../lib/desk';
+import { footprint, rotateItem, isOutside, money, newItem, productById, placeableProducts, totalPrice, type DeskItem } from '../lib/desk';
 import { ProductArt } from '../components/ProductArt';
 import { Modal } from '../components/Modal';
 import { DeskCanvas } from '../components/DeskCanvas';
@@ -40,7 +40,7 @@ export function Studio() {
   function resize(e: FormEvent) { e.preventDefault(); const w = Number(width), d = Number(depth); if (!Number.isInteger(w) || !Number.isInteger(d) || w < 100 || w > 10000 || d < 100 || d > 10000) return; setSetup(s => ({ ...s, desk_width_mm: w, desk_depth_mm: d })); notify('책상 크기를 변경했어요. 제품의 실제 크기와 위치는 유지됩니다.'); }
   function add(id: string) { const item = newItem(productById.get(id)!, setup); setSetup(s => ({ ...s, items: [...s.items, item] })); setSelectedId(item.instance_id); setAddOpen(false); notify('제품을 추가했어요.'); }
   function remove(id: string) { setSetup(s => ({ ...s, items: s.items.filter(i => i.instance_id !== id) })); if (selectedId === id) setSelectedId(null); }
-  function example() { const ids = ['ikea-80474783', 'ikea-30457663', 'ikea-80494880']; const coords = [[465, 40], [375, 330], [1120, 100]]; const items = ids.map((id, index) => ({ instance_id: crypto.randomUUID(), product_id: id, x_mm: coords[index][0], y_mm: coords[index][1] })); setSetup({ desk_width_mm: 1400, desk_depth_mm: 800, items }); setSelectedId(items[0].instance_id); }
+  function example() { const ids = ['ilian-basic-medium-black']; const coords = [[300, 40]]; const items = ids.map((id, index) => ({ instance_id: crypto.randomUUID(), product_id: id, x_mm: coords[index][0], y_mm: coords[index][1] })); setSetup({ desk_width_mm: 1400, desk_depth_mm: 800, items }); setSelectedId(items[0].instance_id); }
   return <div className="studio-wrap"><div className="breadcrumbs"><Link to="/products"><ArrowLeft size={14} /> 제품 탐색으로 돌아가기</Link></div>
     <div className="studio-heading"><p className="eyebrow">MAKE ROOM FOR WHAT YOU LOVE</p><h1>내 책상 꾸미기</h1><p>마음에 드는 제품을 놓아보세요. 구매 전에, 내 공간에 어울리는지 가볍게 확인해요.</p><span className="guest-label">로그인 없이도 자유롭게 배치할 수 있어요</span></div>
     <SaveControls />
@@ -67,7 +67,7 @@ export function Studio() {
         <p className="mobile-help">위에서 본 설치 면적을 같은 축척으로 비교해요. 제품 높이, 물체 간 겹침, 케이블 공간은 별도로 확인해 주세요.</p>
       </aside>
     </div>
-    {addOpen && <Modal title="책상에 놓을 제품 선택" onClose={() => setAddOpen(false)} wide><p className="eyebrow">ADD YOUR FAVORITES</p><h2>책상에 무엇을 놓을까요?</h2><p className="auth-copy">같은 제품도 여러 개 배치할 수 있어요. 실물 사진과 최신 가격은 판매처에서 확인해 주세요.</p><label className="field"><input aria-label="추가할 제품 검색" placeholder="제품 이름으로 검색" value={search} onChange={e => setSearch(e.target.value)} /></label><div className="add-grid">{products.filter(p => p.name.includes(search.trim())).map(p => <button key={p.id} onClick={() => add(p.id)}><div className="mini-art"><ProductArt product={p} /></div><div><strong>{p.name}</strong><small>{p.w} × {p.d} mm · {money(p.price)}</small></div><Plus size={16} /></button>)}</div>{!products.some(p => p.name.includes(search.trim())) && <p className="auth-copy">검색 결과가 없어요.</p>}</Modal>}
+    {addOpen && <Modal title="책상에 놓을 제품 선택" onClose={() => setAddOpen(false)} wide><p className="eyebrow">ADD YOUR FAVORITES</p><h2>책상에 무엇을 놓을까요?</h2><p className="auth-copy">같은 제품도 여러 개 배치할 수 있어요. 실물 사진과 최신 가격은 판매처에서 확인해 주세요.</p><label className="field"><input aria-label="추가할 제품 검색" placeholder="제품 이름으로 검색" value={search} onChange={e => setSearch(e.target.value)} /></label><div className="add-grid">{placeableProducts.filter(p => p.name.includes(search.trim())).map(p => <button key={p.id} onClick={() => add(p.id)}><div className="mini-art"><ProductArt product={p} /></div><div><strong>{p.name}</strong><small>{p.w} × {p.d} mm · {money(p.price)}</small></div><Plus size={16} /></button>)}</div>{!placeableProducts.some(p => p.name.includes(search.trim())) && <p className="auth-copy">검색 결과가 없어요.</p>}</Modal>}
     {clearOpen && <Modal title="현재 배치 비우기" onClose={() => setClearOpen(false)}><h2>현재 배치를 비울까요?</h2><p className="auth-copy">화면에 배치한 제품을 모두 제거합니다. 계정에 저장한 구성은 유지돼요.</p><div className="dialog-actions"><button className="btn" onClick={() => setClearOpen(false)}>취소</button><button className="btn danger" onClick={() => { setSetup(s => ({ ...s, items: [] })); setSelectedId(null); setClearOpen(false); }}>배치 비우기</button></div></Modal>}
   </div>;
 }

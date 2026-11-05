@@ -5,10 +5,16 @@ export type Product = {
   id: string; name: string; cat: number; price: number; w: number; d: number;
   type: string; desc: string; tag: string; why: string; sample: boolean;
   seller_name: string | null; seller_url: string | null; price_checked_at: string | null;
-  image_source: string; image_url?: string; image_source_url?: string; manufacturer_code?: string; dimension_note?: string;
+  image_source: string; image_note?: string; image_url?: string; image_source_url?: string; manufacturer_code?: string; dimension_note?: string;
 };
 export const products: Product[] = productData;
-export const categories = ['전체', '모니터 받침대', '키보드 · 마우스', '조명', '데스크매트', '수납 · 정리', '데스크 소품'];
+export const isDeskProduct = (p: Product) => p.type === 'desk';
+export const placeableProducts = products.filter(p => !isDeskProduct(p));
+export function applyDeskSize(setup: DeskSetup, product: Product): DeskSetup {
+  if (!isDeskProduct(product)) throw new Error('책상 상품을 선택해 주세요.');
+  return { ...setup, desk_width_mm: product.w, desk_depth_mm: product.d };
+}
+export const categories = ['전체', '모니터 받침대', '키보드 · 마우스', '조명', '데스크매트', '수납 · 정리', '데스크 소품', '책상', '오디오·마이크', '충전·연결'];
 // Keep old sample identities and dimensions for saved layouts; do not silently replace them.
 export const productById = new Map<string, Product>([...legacyData, ...products].map(p => [p.id, p]));
 export const availableCategories = categories.map((name, id) => ({ name, id })).filter(c => c.id === 0 || products.some(p => p.cat === c.id));

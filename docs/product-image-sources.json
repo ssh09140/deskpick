@@ -76,6 +76,125 @@
       "id": "ikea-90404916",
       "page": "https://www.ikea.com/kr/ko/p/naevlinge-led-work-lamp-black-90404916/",
       "image": "https://www.ikea.com/kr/ko/images/products/naevlinge-led-work-lamp-black__0709827_pe727109_s5.jpg"
+    },
+    {
+      "id": "fiture-m1-plus-1400-white",
+      "page": "https://www.camelmountmall.com/goods/goods_view.php?goodsNo=1000000316",
+      "image": "https://godomall.speedycdn.net/092857fedbdb437d274f40f06b9447a7/goods/1000000316/image/detail/1000000316_detail_572.jpg",
+      "checked_at": "2026-11-04",
+      "usage_permission": "not_verified"
+    },
+    {
+      "id": "fiture-e1-plus-1400-white",
+      "page": "https://www.camelmountmall.com/goods/goods_view.php?goodsNo=1000000290",
+      "image": "https://godomall.speedycdn.net/092857fedbdb437d274f40f06b9447a7/goods/1000000290/image/detail/1000000290_detail_435.jpg",
+      "checked_at": "2026-11-04",
+      "usage_permission": "not_verified"
+    },
+    {
+      "id": "fiture-e2-1400-white",
+      "page": "https://www.camelmountmall.com/goods/goods_view.php?goodsNo=1000000327",
+      "image": "https://godomall.speedycdn.net/092857fedbdb437d274f40f06b9447a7/goods/1000000327/image/detail/1000000327_detail_781.jpg",
+      "checked_at": "2026-11-04",
+      "usage_permission": "not_verified"
+    },
+    {
+      "id": "fiture-b1-3step-1400-white",
+      "page": "https://www.camelmountmall.com/goods/goods_view.php?goodsNo=1000000356",
+      "image": "https://godomall.speedycdn.net/092857fedbdb437d274f40f06b9447a7/goods/1000000356/image/detail/1000000356_detail_478.jpg",
+      "checked_at": "2026-11-04",
+      "usage_permission": "not_verified"
+    },
+    {
+      "id": "ilian-basic-medium-black",
+      "page": "https://ilian.cafe24.com/product/%EC%9D%BC%EB%A6%AC%EC%95%88-%EB%B2%A0%EC%9D%B4%EC%A7%81-%EB%AA%A8%EB%93%88%EB%9F%AC-%EB%AA%A8%EB%8B%88%ED%84%B0-%EB%B0%9B%EC%B9%A8%EB%8C%80-medium-%EC%8B%B1%EA%B8%80/33/category/1/display/2/",
+      "image": "https://ilian.cafe24.com/web/product/big/202402/c0f0f3053fbcf671b563eeff4b8c11d8.jpg",
+      "checked_at": "2026-11-05",
+      "usage_permission": "not_verified"
+    },
+    {
+      "id": "ilian-basic-large-white",
+      "page": "https://ilian.cafe24.com/product/%EC%9D%BC%EB%A6%AC%EC%95%88-%EB%B2%A0%EC%9D%B4%EC%A7%81-%EB%AA%A8%EB%93%88%EB%9F%AC-%EB%AA%A8%EB%8B%88%ED%84%B0-%EB%B0%9B%EC%B9%A8%EB%8C%80-large-%EB%93%80%EC%96%BC/32/category/1/display/2/",
+      "image": "https://ilian.cafe24.com/web/product/big/202404/be9ff61e45673305f1c9bdc47330206a.jpg",
+      "checked_at": "2026-11-05",
+      "usage_permission": "not_verified"
+    },
+    {
+      "id": "edifier-mr3",
+      "page": "https://www.edifier.com/int/global/p/studio-monitors/mr3",
+      "image": "https://new-edifier-us-oss.edifier.com/images/20240904/dd1e9b43755dd4c1919277d05885c64a.png",
+      "checked_at": "2026-11-05",
+      "usage_permission": "not_verified"
+    },
+    {
+      "id": "edifier-mr4",
+      "page": "https://www.edifier.com/int/global/p/studio-monitors/mr4",
+      "image": "https://new-edifier-us-oss.edifier.com/images/20240910/5e8e69f21bc50cf0e822f6e366ad209f.png",
+      "checked_at": "2026-11-05",
+      "usage_permission": "not_verified"
+    },
+    {
+      "id": "edifier-mr5",
+      "page": "https://www.edifier.com/int/global/p/studio-monitors/mr5",
+      "image": "https://new-edifier-us-oss.edifier.com/images/20250623/656114eaafaa54ba478cee54b2a07de1.png",
+      "checked_at": "2026-11-05",
+      "usage_permission": "not_verified"
+    },
+    {
+      "id": "edifier-mr4-mkii",
+      "page": "https://www.edifier.com/int/global/p/studio-monitors/mr4-mkii",
+      "image": "https://new-edifier-us-oss.edifier.com/images/20260625/eb787849b0bfe85b4122199403aafae0.webp",
+      "checked_at": "2026-11-05",
+      "usage_permission": "not_verified"
+    },
+    {
+      "id": "edifier-m60",
+      "page": "https://www.edifier.com/int/global/p/computer-speakers/m60",
+      "image": "https://new-edifier-us-oss.edifier.com/images/20240914/e0bc1c35ba8b2771bdd2eccd8df5a59f.png",
+      "checked_at": "2026-11-05",
+      "usage_permission": "not_verified"
+    },
+    {
+      "id": "edifier-m90",
+      "page": "https://www.edifier.com/int/global/p/computer-speakers/m90",
+      "image": "https://new-edifier-us-oss.edifier.com/images/20260105/cd66e98320385f9088a863db24fab690.png",
+      "checked_at": "2026-11-05",
+      "usage_permission": "not_verified"
+    },
+    {
+      "id": "vertitap-basic",
+      "page": "https://vertitap.com/product/vertical-basic/26/",
+      "image": "https://ecimg.cafe24img.com/pg1505b30798383006/newdepot/web/product/big/20260729/eb5e5675d9b486e3dee32bdac9a730aa.png",
+      "checked_at": "2026-11-05",
+      "usage_permission": "not_verified"
+    },
+    {
+      "id": "vertitap-65",
+      "page": "https://vertitap.com/product/vertical-ultra65/35/",
+      "image": "https://ecimg.cafe24img.com/pg1505b30798383006/newdepot/web/product/big/20260729/9c00144c9bfb208f301c194dc48d0437.png",
+      "checked_at": "2026-11-05",
+      "usage_permission": "not_verified"
+    },
+    {
+      "id": "vertitap-100",
+      "page": "https://vertitap.com/product/vertical-ultra100/36/",
+      "image": "https://ecimg.cafe24img.com/pg1505b30798383006/newdepot/web/product/big/20260729/87f765b6cc575701eaed9262da5f105c.png",
+      "checked_at": "2026-11-05",
+      "usage_permission": "not_verified"
+    },
+    {
+      "id": "benq-screenbar-pro",
+      "page": "https://www.benq.com/ko-kr/lighting/monitor-light/screenbar-pro.html",
+      "image": "https://image.benq.com/is/image/benqco/black-45-nocable?$ResponsivePreset$",
+      "checked_at": "2026-11-05",
+      "usage_permission": "not_verified"
+    },
+    {
+      "id": "elesense-e1132",
+      "page": "https://choetech.kr/?idx=265",
+      "image": "https://cdn-optimized.imweb.me/upload/S2020062393cfb7c905bf2/c3604b1c774a0.jpg?w=800",
+      "checked_at": "2026-11-05",
+      "usage_permission": "not_verified"
     }
   ]
 }
