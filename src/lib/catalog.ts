@@ -16,17 +16,22 @@ export type CatalogMeta = { category: string; subcategory: string; brand: string
 // Recommendation flags remain empty until products are explicitly selected.
 const categoryForLegacy: Record<number, string> = { 1: 'monitors', 2: 'input', 3: 'lighting', 4: 'organization', 5: 'organization', 6: 'accessories', 7: 'desks', 8: 'audio', 9: 'charging' };
 export function metadata(p: Product): CatalogMeta {
-  const subcategory = p.cat === 9 ? 'power-strip' : p.cat === 8 ? 'speaker' : p.cat === 7 ? 'standing-desk' : p.cat === 1 ? 'monitor-stand' : p.cat === 2 ? (p.type === 'mouse' ? 'mouse' : 'keyboard') : p.cat === 3 ? (p.type === 'monitor-light' ? 'monitor-light' : 'desk-light') : p.cat === 4 ? 'desk-pad' : p.cat === 5 ? (p.type === 'tray' ? 'tray' : 'organizer') : 'clock';
+  const subcategory = p.cat === 9 ? (p.type === 'hub' ? 'hub' : 'power-strip') : p.cat === 8 ? 'speaker' : p.cat === 7 ? 'standing-desk' : p.cat === 1 ? 'monitor-stand' : p.cat === 2 ? (p.type === 'mouse' ? 'mouse' : 'keyboard') : p.cat === 3 ? (p.type === 'monitor-light' ? 'monitor-light' : 'desk-light') : p.cat === 4 ? 'desk-pad' : p.cat === 5 ? (p.type === 'tray' ? 'tray' : p.type === 'cable-organizer' ? 'cable-organizer' : 'organizer') : 'clock';
   return {
     category: categoryForLegacy[p.cat], subcategory,
-    brand: p.id.startsWith('ikea-') ? 'IKEA' : p.id.startsWith('apple-') ? 'Apple' : p.id.startsWith('fiture-') ? '핏쳐' : p.id.startsWith('ilian-') ? '일리안' : p.id.startsWith('edifier-') ? '에디파이어' : p.id.startsWith('vertitap-') ? '버티탭' : p.id.startsWith('benq-') ? '벤큐' : p.id.startsWith('elesense-') ? '엘레센스' : '',
+    brand: p.id.startsWith('ikea-') ? 'IKEA' : p.id.startsWith('apple-') ? 'Apple' : p.id.startsWith('fiture-') ? '핏쳐' : p.id.startsWith('ilian-') ? '일리안' : p.id.startsWith('edifier-') ? '에디파이어' : p.id.startsWith('vertitap-') ? '버티탭' : p.id.startsWith('benq-') ? '벤큐' : p.id.startsWith('elesense-') ? '엘레센스' : p.id.startsWith('aula-') ? 'AULA 독거미' : p.id.startsWith('preflow-') ? '프리플로우' : p.id.startsWith('desker-') ? '데스커' : p.id.startsWith('caldigit-') ? '칼디짓' : p.id.startsWith('yast-') ? '야스트' : p.id.startsWith('arbon-') ? '아르본드' : p.id.startsWith('machlink-') ? '마하링크' : p.id.startsWith('logitech-') ? '로지텍' : p.id.startsWith('atk-') ? 'ATK VXE' : '',
     colors: p.id.startsWith('vertitap-') ? ['화이트', '블랙', '핑크', '블루'] : p.name.includes('화이트/투명') ? ['화이트', '투명'] : p.name.includes('화이트') ? ['화이트'] : p.name.includes('블랙') ? ['블랙'] : p.name.includes('다크옐로') ? ['옐로'] : [],
     recommendations: [],
     ...catalogOverrides[p.id],
   };
 }
 // Add confirmed metadata and recommendation flags here when expanding the catalogue.
-export const catalogOverrides: Record<string, Partial<CatalogMeta>> = {};
+export const catalogOverrides: Record<string, Partial<CatalogMeta>> = {
+  'logitech-mx-master-4': { colors: ['그래파이트'] },
+  'logitech-mx-master-3s': { colors: ['그래파이트'] },
+  'yast-m-ivory': { colors: ['아이보리'] },
+  'desker-computer-2-1400-white': { subcategory: 'standard-desk' },
+};
 export const categoryName = (p: Product) => catalogCategories.find(c => c.id === metadata(p).category)?.name ?? '';
 export const subcategoryName = (p: Product) => catalogCategories.flatMap(c => c.children).find(([id]) => id === metadata(p).subcategory)?.[1] ?? '';
 export const populatedChildren = (category: string) => catalogCategories.find(c => c.id === category)?.children.filter(([id]) => products.some(p => metadata(p).subcategory === id)) ?? [];

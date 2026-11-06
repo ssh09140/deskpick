@@ -111,3 +111,58 @@ MR4 치수 추가 출처: https://www.edifier.com/s/studio-monitors/mr4
 - 엘레센스 공식몰 제원 이미지: https://cdn.imweb.me/upload/S2020062393cfb7c905bf2/e46f8ecbafd97.jpg
 
 사진 사용 허락은 별도로 확인되지 않았습니다. 모니터 조명은 책상 위 설치 면적이 아닌 평면 크기 비교용으로 표시합니다. 엘레센스 색상명은 판매처에서 명시적으로 확인하지 못해 색상 필터에 임의로 지정하지 않았습니다.
+
+## 2026-11-05 키보드 추가
+
+등록 범위: AULA 독거미 F87Pro/F99, 프리플로우 archon AK68 DualDial/AK74 PRO 4종. 국내 전체 판매량 순위를 의미하지 않는다. 프리플로우 공식몰 베스트셀러의 AK68/AK74 PRO와 브라보텍의 F87Pro/F99 재입고 안내를 참고했다. 임의 인기 순위·리뷰 점수·추천 태그는 추가하지 않았다.
+
+- 선정 참고: https://www.preflow.co.kr/peripherals_home (베스트셀러 AK68 말차라떼, AK74 PRO 마시멜로우. AK68 등록 색상은 소다)
+- 독거미 유통사 안내: https://funkeys.co.kr/bbs/board.php?bo_table=notice&wr_id=1464 (과거 재입고 안내이며 현재 판매 순위 자료는 아님)
+
+| 제품 / 등록 색상 | 표시 판매가 | 본체 가로 × 깊이(mm) | 판매 페이지 |
+| --- | ---: | --- | --- |
+| F87Pro 유무선 / 인디고 블랙 | 67,000원 | 365 × 139 | https://store.ohou.se/goods/3630962 |
+| F99 유무선 / 올리비아 화이트 / 저소음 솜사탕축 | 77,000원 | 390.63 × 146.78 | https://store.ohou.se/goods/3612362 |
+| AK68 DualDial / 소다 | 69,900원 | 444 × 141 | https://preflow.co.kr/product/detail.html?product_no=44 |
+| AK74 PRO / 마시멜로우 | 89,900원 | 445 × 142 | https://preflow.co.kr/product/detail.html?product_no=250 |
+
+F87Pro와 프리플로우 제품은 페이지 기본 판매가이며 축 옵션별 가격·재고를 확정하는 표시가 아니다. 상세 설명에 옵션별 차이와 배송비 확인을 안내한다. F99는 특정 축 상품이다. 이전 F99 72,000원 판매 페이지는 품절 표시 때문에 사용하지 않았다.
+
+규격 근거: 독거미는 위 판매 페이지 상품 고시. 프리플로우는 공식몰 동일 모델의 국내 판매처 상품 고시 교차 확인:
+- AK68 소다: https://www.compuzone.co.kr/product/product_detail.htm?ProductNo=1287055
+- AK74 PRO: https://www.compuzone.co.kr/product/product_detail.htm?BigDivNo=&DivNo=0&MediumDivNo=1018&ProductNo=1347585
+
+사진은 각 등록 색상의 판매 페이지 대표 이미지 원본을 로컬 저장했으며 이미지 URL은 product-image-sources.json에 기록했다. 키보드 외곽 치수만 시뮬레이터에 반영하며 케이블·손목 받침대 공간은 제외한다.
+
+## 2026-11-06 데스커 책상 추가
+
+- 모션데스크 플러스 DSDCM1407: https://www.desker.co.kr/product/detail/239 — 677,000원.
+- 컴퓨터데스크 2.0 DSDBB1407: https://www.desker.co.kr/product/detail/612 — 207,000원.
+- 두 제품 모두 공식 상품명 기준 1400 × 700mm, 화이트 상판/다리 WWWW 단품. 일반 판매가이며 기업 회원 할인·별도 액세서리·추가 설치비는 포함하지 않는다.
+- 사진은 해당 모델 WWWW 갤러리 원본. 공식 페이지의 이미지 경로가 cdn.desker.co.kr로 연결됨을 브라우저에서 확인하고 원본을 저장했다. 원본 URL은 product-image-sources.json 참조.
+- 일반 책상은 standard-desk로 분류하고, 두 제품 모두 기존 desk 타입을 유지하여 책상 크기 적용 및 배치 합계 제외 동작을 유지한다.
+
+## 2026-11-06 칼디짓 도킹스테이션 추가
+
+- TS4: https://caldigit.co.kr/product/ts4/9/ — 기본 판매가 599,000원. 예약판매. 확인 당시 569,000원 기간 할인(11월 10일 종료 예정)은 고정 표시 가격에 반영하지 않음.
+- TS5 Plus: https://caldigit.co.kr/product/ts5-plus/112/ — 기본 판매가 899,000원.
+- TS4 규격: https://www.caldigit.com/ts4-support/ — 높이 141, 폭 42, 깊이 113mm. 일부 설명서의 113.4mm 표기 대신 공식 지원 페이지 규격 사용.
+- TS5 Plus 규격: https://www.caldigit.com/thunderbolt-5-dock-ts5-plus/ — 높이 155, 폭 47, 깊이 127.9mm.
+- 세워 놓은 본체의 바닥 면적을 시뮬레이터에 반영. 외장 어댑터와 케이블/통풍 공간은 별도이며 가로 배치 면적과 다름을 안내.
+- USB-C 모양만으로 호환성을 보장하지 않으며 모니터/충전 기능은 호스트 지원 규격에 따름. TS5 Plus는 일반 USB-C 전용 호스트로 안내하지 않음.
+- 공식몰 사진 원본 저장. 이미지 출처는 product-image-sources.json에 기록.
+
+## 2026-11-06 데스크패드·케이블 홀더 추가
+
+- [야스트 논슬립 가죽 데스크패드 · M 아이보리](https://store.ohou.se/goods/1814251): 10900원. M 옵션의 외곽 800 × 400mm 기준입니다. 패드 위에 키보드와 마우스를 겹쳐 배치할 수 있습니다. 판매처 대표 연출 사진입니다. 다른 크기·색상 예시와 주변 소품이 포함되어 있으며, 판매 구성은 M 아이보리 패드 한 장입니다.
+- [아르본드 논슬립 펠트 데스크매트 · 소형 블랙](https://www.coupang.com/vp/products/8703104516?itemId=25273982632): 13800원. 판매처 옵션표의 소형 외곽 800 × 400mm 기준입니다. 중형 900 × 450mm, 대형 1200 × 600mm와 구분해 주세요. 판매처 대표 연출 사진으로 다른 색상 예시와 주변 기기가 포함됩니다. 판매 구성은 소형 블랙 패드 한 장입니다.
+- [마하링크 마그네틱 케이블 홀더 · 화이트 6개 세트](https://www.guidecom.co.kr/shop/detail.html?gid=374604): 2610원. 홀더 한 개는 20 × 20 × 높이 11mm입니다. 시뮬레이터는 6개를 가로로 붙여 놓은 120 × 20mm 묶음으로 표시하며, 개별 분리 배치는 지원하지 않습니다. 합계에는 6개 세트 가격을 한 번 반영합니다. 화이트 홀더 6개 세트 판매처 사진입니다.
+
+## 2026-11-06 마우스 추가
+
+- [로지텍 MX Master 4 · 그래파이트](https://shinsegaemall.ssg.com/item/itemView.ssg?itemId=1000880182295): 179000원, 88.35 × 128.15mm. 해당 모델의 그래파이트 또는 블랙 제품 사진입니다.
+- [로지텍 MX Master 3S · 그래파이트](https://www.compuzone.co.kr/product/product_detail.htm?ProductNo=915252): 139000원, 84.3 × 124.9mm. 해당 모델의 그래파이트 또는 블랙 제품 사진입니다.
+- [로지텍 G304 LIGHTSPEED · 블랙](https://www.compuzone.co.kr/product/product_detail.htm?ProductNo=465364): 42900원, 62.15 × 116.6mm. 해당 모델의 그래파이트 또는 블랙 제품 사진입니다.
+- [ATK VXE R1 SE+ · 블랙](https://store.ohou.se/goods/3808351): 25900원, 64 × 120.6mm. 판매처의 색상별 제품 예시 사진입니다. 등록 옵션은 블랙 한 개이며 4개 세트가 아닙니다.
+
+치수: 로지텍 한국 공식 MX Master 4·3S 제품 사양, 컴퓨존 G304 상품정보, [오마이피씨 R1 SE+ 규격](https://www.omypc.co.kr/products/6702). 마우스의 세로 길이를 바닥 깊이로 사용하며, 제품 높이를 배치 깊이로 사용하지 않습니다. 가격은 쿠폰·결제 할인 전 기준입니다.
