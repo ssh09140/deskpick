@@ -5,6 +5,7 @@ import { useApp, type AuthMode } from '../context';
 import { friendlyError, requireClient } from '../lib/supabase';
 import { ErrorNotice } from './ErrorNotice';
 import { Modal } from './Modal';
+import { demoAccount } from '../lib/demo-account';
 
 export function AuthDialog({ pageMode }: { pageMode?: AuthMode }) {
   const navigate = useNavigate();
@@ -90,6 +91,16 @@ export function AuthDialog({ pageMode }: { pageMode?: AuthMode }) {
       {mode === 'login' && <div className="auth-secondary"><button className="text-btn" disabled={busy} onClick={() => switchMode('recover')}>비밀번호 찾기</button><button className="text-btn" disabled={busy} onClick={resend}>가입 확인 메일 다시 받기</button></div>}
       {mode === 'recover' && <button className="text-btn full" disabled={busy} onClick={() => switchMode('login')}>로그인으로 돌아가기</button>}
       <div className="auth-benefit"><Check size={15} /> 로그인 전후에도 현재 배치는 그대로 유지돼요.</div>
+      {mode === 'login' && <section className="demo-account" aria-label="공개 체험 계정">
+        <strong>공개 체험 계정</strong>
+        <dl><dt>이메일</dt><dd>{demoAccount.email}</dd><dt>비밀번호</dt><dd>{demoAccount.password}</dd></dl>
+        <p>저장한 책상은 다른 체험 사용자도 보고 수정할 수 있어요.</p>
+        <button type="button" className="btn full" disabled={busy} onClick={() => {
+          setEmail(demoAccount.email);
+          setPassword(demoAccount.password);
+          setError('');
+        }}>체험 계정 정보 입력</button>
+      </section>}
       <button className="text-btn full" disabled={busy} onClick={close}>계속 둘러보기</button>
     </>}
   </>;
