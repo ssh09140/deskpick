@@ -1,10 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { products } from './desk';
 import rawProducts from '../data/products.json';
-import { catalogCategories, catalogOverrides, filterProducts, metadata, populatedChildren, readFilters } from './catalog';
+import { catalogCategories, recommendations, filterProducts, metadata, populatedChildren, readFilters } from './catalog';
 const filters = (query: string) => readFilters(new URLSearchParams(query));
 
 describe('catalogue navigation and combined filters', () => {
+  it('finds Hoverpen as a decoration with its pedestal footprint', () => {
+    expect(populatedChildren('accessories')).toEqual([['clock', '탁상시계'], ['decoration', '장식 소품']]);
+    expect(filterProducts(products, filters('category=accessories&subcategory=decoration&brand=노비움&color=블랙'))).toMatchObject([{ id: 'novium-hoverpen-interstellar-black', w: 88, d: 76 }]);
+    expect(filterProducts(products, filters('category=accessories&subcategory=clock&brand=노비움'))).toHaveLength(0);
+  });
   it('filters mice independently of keyboards with horizontal footprints', () => {
     expect(filterProducts(products, filters('category=input&subcategory=mouse'))).toHaveLength(4);
     expect(filterProducts(products, filters('category=input&subcategory=mouse&brand=로지텍'))).toHaveLength(3);
@@ -56,9 +61,17 @@ describe('catalogue navigation and combined filters', () => {
   });
   it('separates monitor lights from desk lamps and filters each brand', () => {
     expect(populatedChildren('lighting')).toEqual([['monitor-light', '모니터 조명']]);
-    expect(filterProducts(products, filters('category=lighting&subcategory=monitor-light'))).toHaveLength(2);
+    expect(filterProducts(products, filters('category=lighting&subcategory=monitor-light'))).toHaveLength(5);
     expect(filterProducts(products, filters('category=lighting&brand=엘레센스&price=100000')).map(p => p.id)).toEqual(['elesense-e1132']);
     expect(filterProducts(products, filters('category=lighting&brand=벤큐&color=블랙')).map(p => p.id)).toEqual(['benq-screenbar-pro']);
+  });
+  it('distinguishes BenQ generations and uses Max depth rather than height', () => {
+    const lights = filterProducts(products, filters('category=lighting&brand=벤큐'));
+    expect(lights).toHaveLength(4);
+    expect(lights.find(p => p.id === 'benq-screenbar-max')).toMatchObject({ w: 850, d: 374 });
+    expect(lights.find(p => p.id === 'benq-screenbar-halo')).toMatchObject({ w: 500, d: 95 });
+    expect(lights.find(p => p.id === 'benq-screenbar-halo-2')).toMatchObject({ w: 500, d: 143 });
+    expect(filterProducts(products, filters('category=lighting&recommendation=value')).map(p => p.id)).toEqual(['elesense-e1132']);
   });
   it('finds keyboards by brand, budget and name with their real footprints', () => {
     expect(filterProducts(products, filters('category=input&subcategory=keyboard'))).toHaveLength(4);
@@ -77,15 +90,18 @@ describe('catalogue navigation and combined filters', () => {
     expect(filterProducts(products, filters('category=desks&brand=데스커&subcategory=standard-desk&color=화이트&price=300000')).map(p => p.id)).toEqual(['desker-computer-2-1400-white']);
     expect(filterProducts(products, filters('category=desks&brand=데스커&subcategory=standing-desk')).map(p => p.id)).toEqual(['desker-motion-plus-1400-white']);
   });
-  it('does not invent recommendations; supports both tags and intersection with filters', () => {
-    expect(filterProducts(products, filters('recommendation=value'))).toEqual([]);
-    const id = 'ilian-basic-medium-black';
-    catalogOverrides[id] = { recommendations: ['value', 'curator'] };
-    try {
-      expect(filterProducts(products, filters('recommendation=value&category=monitors')).map(p => p.id)).toEqual([id]);
-      expect(filterProducts(products, filters('recommendation=curator')).map(p => p.id)).toEqual([id]);
-      expect(filterProducts(products, filters('recommendation=curator&brand=Apple'))).toEqual([]);
-    } finally { delete catalogOverrides[id]; }
+  it('shows only the seven selected value picks and combines other filters', () => {
+    expect(filterProducts(products, filters('recommendation=value')).map(p => p.id).sort()).toEqual([
+      'fiture-e2-1400-white', 'ilian-basic-medium-black', 'aula-f87-pro',
+      'atk-vxe-r1-se-plus', 'elesense-e1132', 'edifier-m60', 'vertitap-65',
+    ].sort());
+    expect(filterProducts(products, filters('recommendation=value&category=monitors')).map(p => p.id)).toEqual(['ilian-basic-medium-black']);
+    expect(filterProducts(products, filters('recommendation=value&category=input&subcategory=mouse&price=50000')).map(p => p.id)).toEqual(['atk-vxe-r1-se-plus']);
+  });
+  it('removes curator recommendations and treats old links as all products', () => {
+    expect(recommendations.map(r => r.id)).toEqual(['', 'value']);
+    expect(filters('recommendation=curator').recommendation).toBe('');
+    expect(filterProducts(products, filters('recommendation=curator'))).toEqual(products);
   });
   it('handles old category links, stale subcategories, and invalid prices', () => {
     expect(filters('category=1').category).toBe('monitors');

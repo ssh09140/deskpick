@@ -10,10 +10,10 @@ export const catalogCategories = [
   { id: 'organization', name: '패드·수납·정리', icon: 'mat', children: [['desk-pad', '데스크패드·마우스패드'], ['tray', '수납 트레이'], ['drawer', '미니 서랍장'], ['organizer', '연필꽂이·도구 정리함'], ['cable-organizer', '케이블 정리용품'], ['cable-tray', '케이블 트레이·멀티탭 거치대']] },
   { id: 'accessories', name: '데스크 소품', icon: 'clock', children: [['clock', '탁상시계'], ['plant', '화분·식물'], ['coaster', '코스터'], ['decoration', '장식 소품']] },
 ];
-export const recommendations = [{ id: '', name: '전체 제품' }, { id: 'value', name: '가성비 추천' }, { id: 'curator', name: '운영자 추천' }];
-export type CatalogMeta = { category: string; subcategory: string; brand: string; colors: string[]; recommendations: ('value' | 'curator')[] };
+export const recommendations = [{ id: '', name: '전체 제품' }, { id: 'value', name: '가성비 추천' }];
+export type CatalogMeta = { category: string; subcategory: string; brand: string; colors: string[]; recommendations: 'value'[] };
 // Existing product IDs, prices, links and saved layouts stay unchanged.
-// Recommendation flags remain empty until products are explicitly selected.
+// Only explicitly selected products receive recommendation flags.
 const categoryForLegacy: Record<number, string> = { 1: 'monitors', 2: 'input', 3: 'lighting', 4: 'organization', 5: 'organization', 6: 'accessories', 7: 'desks', 8: 'audio', 9: 'charging' };
 export function metadata(p: Product): CatalogMeta {
   const subcategory = p.cat === 9 ? (p.type === 'hub' ? 'hub' : 'power-strip') : p.cat === 8 ? 'speaker' : p.cat === 7 ? 'standing-desk' : p.cat === 1 ? 'monitor-stand' : p.cat === 2 ? (p.type === 'mouse' ? 'mouse' : 'keyboard') : p.cat === 3 ? (p.type === 'monitor-light' ? 'monitor-light' : 'desk-light') : p.cat === 4 ? 'desk-pad' : p.cat === 5 ? (p.type === 'tray' ? 'tray' : p.type === 'cable-organizer' ? 'cable-organizer' : 'organizer') : 'clock';
@@ -27,6 +27,19 @@ export function metadata(p: Product): CatalogMeta {
 }
 // Add confirmed metadata and recommendation flags here when expanding the catalogue.
 export const catalogOverrides: Record<string, Partial<CatalogMeta>> = {
+  'divoom-ditoo-pro': { subcategory: 'decoration', brand: '디붐' },
+  'divoom-minitoo': { subcategory: 'decoration', brand: '디붐' },
+  'divoom-times-gate': { subcategory: 'clock', brand: '디붐' },
+  'novium-hoverpen-interstellar-black': { subcategory: 'decoration', brand: '노비움', colors: ['블랙'] },
+  'benq-screenbar-halo': { colors: ['그레이'] },
+  'benq-screenbar-halo-2': { colors: ['다크그레이'] },
+  'fiture-e2-1400-white': { recommendations: ['value'] },
+  'ilian-basic-medium-black': { recommendations: ['value'] },
+  'aula-f87-pro': { recommendations: ['value'] },
+  'atk-vxe-r1-se-plus': { recommendations: ['value'] },
+  'elesense-e1132': { recommendations: ['value'] },
+  'edifier-m60': { recommendations: ['value'] },
+  'vertitap-65': { recommendations: ['value'] },
   'logitech-mx-master-4': { colors: ['그래파이트'] },
   'logitech-mx-master-3s': { colors: ['그래파이트'] },
   'yast-m-ivory': { colors: ['아이보리'] },
@@ -45,7 +58,7 @@ export function readFilters(params: URLSearchParams): CatalogFilters {
   return {
     category: validCategory,
     subcategory: catalogCategories.find(c => c.id === validCategory)?.children.some(([id]) => id === subcategory) ? subcategory : '',
-    recommendation: ['value', 'curator'].includes(params.get('recommendation') ?? '') ? params.get('recommendation')! : '',
+    recommendation: params.get('recommendation') === 'value' ? 'value' : '',
     brand: params.get('brand') ?? '', color: params.get('color') ?? '',
     price: price > 0 ? price : Infinity, query: params.get('q') ?? '', sort: params.get('sort') ?? 'default',
   };

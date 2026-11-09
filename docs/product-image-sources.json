@@ -300,6 +300,55 @@
       "image": "https://prs.ohousecdn.com/apne2/any/uploads/productions/v1-432632448327744.jpg?c=c&h=640&w=640",
       "checked_at": "2026-11-06",
       "usage_permission": "not_verified"
+    },
+    {
+      "id": "benq-screenbar-max",
+      "page": "https://www.benq.com/ko-kr/lighting/dual-monitor-desk-lamp/screenbar-max.html",
+      "image": "https://image.benq.com/is/image/benqco/screenbar-max-top-left45?$ResponsivePreset$",
+      "checked_at": "2026-11-06",
+      "usage_permission": "not_verified"
+    },
+    {
+      "id": "benq-screenbar-halo",
+      "page": "https://www.benq.com/ko-kr/lighting/monitor-light/screenbar-halo.html",
+      "image": "https://image.benq.com/is/image/benqco/together-dark%20brown-1?$ResponsivePreset$",
+      "checked_at": "2026-11-06",
+      "usage_permission": "not_verified"
+    },
+    {
+      "id": "benq-screenbar-halo-2",
+      "page": "https://futureterior.com/product/detail.html?product_no=2339",
+      "image": "https://ecimg.cafe24img.com/pg1638b73531458055/futureterior/web/product/big/20260421/aec7035cb5322af24dd23ecda9dfd36e.png",
+      "checked_at": "2026-11-06",
+      "usage_permission": "not_verified"
+    },
+    {
+      "id": "novium-hoverpen-interstellar-black",
+      "page": "https://hoverpen.co.kr/20/?idx=158",
+      "image": "https://cdn.imweb.me/thumbnail/20220421/f9553147997f9.jpg",
+      "checked_at": "2026-11-06",
+      "usage_permission": "not_verified"
+    },
+    {
+      "id": "divoom-ditoo-pro",
+      "page": "https://store.ohou.se/goods/1987720",
+      "image": "https://prs.ohousecdn.com/apne2/any/uploads/productions/v1-420232920232064.jpg",
+      "checked_at": "2026-11-06",
+      "usage_permission": "not_verified"
+    },
+    {
+      "id": "divoom-minitoo",
+      "page": "https://store.ohou.se/goods/3963901",
+      "image": "https://prs.ohousecdn.com/apne2/any/uploads/productions/v1-470824506085504.jpg",
+      "checked_at": "2026-11-06",
+      "usage_permission": "not_verified"
+    },
+    {
+      "id": "divoom-times-gate",
+      "page": "https://store.ohou.se/goods/2451198",
+      "image": "https://image.ohousecdn.com/i/bucketplace-v2-development/uploads/productions/169983449526742537.JPG",
+      "checked_at": "2026-11-06",
+      "usage_permission": "not_verified"
     }
   ]
 }
