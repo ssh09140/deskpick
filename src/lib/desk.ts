@@ -4,6 +4,7 @@ import legacyData from '../data/legacy-products.json';
 export type Product = {
   id: string; name: string; cat: number; price: number; w: number; d: number;
   type: string; desc: string; tag: string; why: string; sample: boolean;
+  passive_depth_mm?: number;
   seller_name: string | null; seller_url: string | null; price_checked_at: string | null;
   image_source: string; image_note?: string; image_url?: string; image_source_url?: string; manufacturer_code?: string; dimension_note?: string;
 };
@@ -18,14 +19,25 @@ export const categories = ['전체', '모니터 받침대', '키보드 · 마우
 // Keep old sample identities and dimensions for saved layouts; do not silently replace them.
 export const productById = new Map<string, Product>([...legacyData, ...products].map(p => [p.id, p]));
 export const availableCategories = categories.map((name, id) => ({ name, id })).filter(c => c.id === 0 || products.some(p => p.cat === c.id));
-export type DeskItem = { instance_id: string; product_id: string; x_mm: number; y_mm: number; rotation?: 0 | 90 | 180 | 270 };
+export type DeskItem = { instance_id: string; product_id: string; x_mm: number; y_mm: number; rotation?: 0 | 90 | 180 | 270; passive_of?: string };
 export type DeskSetup = { desk_width_mm: number; desk_depth_mm: number; items: DeskItem[] };
 export type SavedSetup = DeskSetup & { user_id: string; created_at: string; updated_at: string };
 export const emptySetup = (): DeskSetup => ({ desk_width_mm: 1400, desk_depth_mm: 800, items: [] });
 export const money = (n: number) => `₩${n.toLocaleString('ko-KR')}`;
-export const totalPrice = (items: DeskItem[]) => items.reduce((sum, item) => sum + (productById.get(item.product_id)?.price ?? 0), 0);
-export function footprint(item: DeskItem) {
+export const purchaseItems = (items: DeskItem[]) => items.filter(item => !item.passive_of);
+export const totalPrice = (items: DeskItem[]) => purchaseItems(items).reduce((sum, item) => sum + (productById.get(item.product_id)?.price ?? 0), 0);
+export function itemLabel(item: DeskItem) {
   const p = productById.get(item.product_id)!;
+  if (!p.passive_depth_mm) return p.name;
+  return p.name + (item.passive_of ? ' · 패시브' : ' · 액티브');
+}
+export function unitSize(item: DeskItem) {
+  const p = productById.get(item.product_id)!;
+  if (!p.passive_depth_mm) return { w: p.w, d: p.d };
+  return { w: p.w / 2, d: item.passive_of ? p.passive_depth_mm : p.d };
+}
+export function footprint(item: DeskItem) {
+  const p = unitSize(item);
   return item.rotation === 90 || item.rotation === 270 ? { w: p.d, d: p.w } : { w: p.w, d: p.d };
 }
 export function rotateItem(item: DeskItem): DeskItem {
@@ -51,12 +63,54 @@ export function parseSetup(value: unknown): DeskSetup {
     if (typeof item.instance_id !== 'string' || !item.instance_id.trim() || ids.has(item.instance_id) || typeof item.product_id !== 'string' || !productById.has(item.product_id) || typeof item.x_mm !== 'number' || typeof item.y_mm !== 'number' || !Number.isFinite(item.x_mm) || !Number.isFinite(item.y_mm)) throw new Error('저장된 구성에 지원하지 않는 제품이나 잘못된 좌표가 있어요. 현재 배치는 유지됩니다.');
     ids.add(item.instance_id);
     if (item.rotation !== undefined && ![0, 90, 180, 270].includes(item.rotation)) throw new Error('저장된 제품의 회전 각도가 올바르지 않아요.');
-    return { instance_id: item.instance_id, product_id: item.product_id, x_mm: item.x_mm, y_mm: item.y_mm, ...(item.rotation ? { rotation: item.rotation } : {}) };
+    if (item.passive_of !== undefined && (typeof item.passive_of !== 'string' || !item.passive_of)) throw new Error('스피커 세트 정보가 올바르지 않아요.');
+    return { instance_id: item.instance_id, product_id: item.product_id, x_mm: item.x_mm, y_mm: item.y_mm, ...(item.rotation ? { rotation: item.rotation } : {}), ...(item.passive_of ? { passive_of: item.passive_of } : {}) };
   });
-  return { desk_width_mm: s.desk_width_mm as number, desk_depth_mm: s.desk_depth_mm as number, items };
+  const byId = new Map(items.map(item => [item.instance_id, item]));
+  const paired = new Set<string>();
+  for (const item of items) {
+    if (!item.passive_of) continue;
+    const active = byId.get(item.passive_of);
+    if (!active || active.passive_of || active.product_id !== item.product_id || !productById.get(item.product_id)?.passive_depth_mm || paired.has(item.passive_of)) throw new Error('스피커 세트 정보가 올바르지 않아요.');
+    paired.add(item.passive_of);
+  }
+  // Older saves contain one rectangle covering both cabinets.
+  const expanded = items.flatMap(item => {
+    if (item.passive_of || paired.has(item.instance_id) || !productById.get(item.product_id)?.passive_depth_mm) return [item];
+    let id = item.instance_id + '-passive';
+    while (ids.has(id)) id += '-2';
+    ids.add(id);
+    return splitSpeaker(item, id);
+  });
+  return { desk_width_mm: s.desk_width_mm as number, desk_depth_mm: s.desk_depth_mm as number, items: expanded };
 }
 export const sameSetup = (a: DeskSetup, b: DeskSetup) => JSON.stringify(parseSetup(a)) === JSON.stringify(parseSetup(b));
 export function newItem(product: Product, setup: DeskSetup): DeskItem {
   const offset = (setup.items.filter(i => i.product_id === product.id).length % 5) * 25;
   return { instance_id: crypto.randomUUID(), product_id: product.id, x_mm: Math.round((setup.desk_width_mm - product.w) / 2 + offset), y_mm: Math.round((setup.desk_depth_mm - product.d) / 2 + offset) };
+}
+
+function splitSpeaker(item: DeskItem, passiveId: string): DeskItem[] {
+  const { w, d } = unitSize(item);
+  const passive: DeskItem = { ...item, instance_id: passiveId, passive_of: item.instance_id };
+  const depthDifference = d - unitSize(passive).d;
+  const active = { ...item };
+  // Place cabinets inside the original bounding box, including rotated saves.
+  switch (item.rotation ?? 0) {
+    case 0: passive.x_mm += w; break;
+    case 90: passive.y_mm += w; passive.x_mm += depthDifference; break;
+    case 180: active.x_mm += w; passive.y_mm += depthDifference; break;
+    case 270: active.y_mm += w; break;
+  }
+  return [active, passive];
+}
+
+export function newPlacement(product: Product, setup: DeskSetup) {
+  const item = newItem(product, setup);
+  if (!product.passive_depth_mm) return [item];
+  const [active, passive] = splitSpeaker(item, crypto.randomUUID());
+  const gap = Math.min(60, Math.max(0, setup.desk_width_mm - product.w));
+  active.x_mm -= gap / 2;
+  passive.x_mm += gap / 2;
+  return [active, passive];
 }

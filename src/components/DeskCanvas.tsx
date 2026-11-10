@@ -1,12 +1,13 @@
 import { useRef } from 'react';
-import { footprint, isOutside, productById, type DeskItem, type DeskSetup } from '../lib/desk';
+import { footprint, unitSize, itemLabel, isOutside, productById, type DeskItem, type DeskSetup } from '../lib/desk';
 import { ProductArt } from './ProductArt';
 import { useApp } from '../context';
 
 function RotatedArt({ item }: { item: DeskItem }) {
   const p = productById.get(item.product_id)!;
   const size = footprint(item);
-  return <span className="rotated-art" style={{ width: `${p.w / size.w * 100}%`, height: `${p.d / size.d * 100}%`, transform: `translate(-50%, -50%) rotate(${item.rotation ?? 0}deg)` }}><ProductArt product={p} top /></span>;
+  const unit = unitSize(item);
+  return <span className="rotated-art" style={{ width: `${unit.w / size.w * 100}%`, height: `${unit.d / size.d * 100}%`, transform: `translate(-50%, -50%) rotate(${item.rotation ?? 0}deg)` }}><ProductArt product={{ ...p, ...unit }} top />{p.passive_depth_mm && <span className="speaker-unit-mark">{item.passive_of ? 'P' : 'A'}</span>}</span>;
 }
 
 export function DeskPreview({ setup }: { setup: DeskSetup }) {
@@ -22,7 +23,7 @@ export function DeskCanvas() {
   return <div className="desk-viewport"><div className="desk" ref={desk} role="group" aria-label="위에서 본 내 책상" style={{ aspectRatio: `${setup.desk_width_mm}/${setup.desk_depth_mm}` }}>
     {!setup.items.length && <div className="desk-empty"><span>YOUR DESK, YOUR WAY</span><p>좋아하는 제품을 하나 놓아볼까요?</p></div>}
     {setup.items.map(item => { const p = productById.get(item.product_id)!; const out = isOutside(item, setup); const size = footprint(item); return <button type="button" key={item.instance_id} className={`object ${selectedId === item.instance_id ? 'chosen' : ''} ${out ? 'outside' : ''}`}
-      aria-label={`${p.name}, 방향키로 이동${out ? ', 책상 밖' : ''}`} aria-pressed={selectedId === item.instance_id}
+      aria-label={`${itemLabel(item)}, 방향키로 이동${out ? ', 책상 밖' : ''}`} aria-pressed={selectedId === item.instance_id}
       style={{ left: `${item.x_mm / setup.desk_width_mm * 100}%`, top: `${item.y_mm / setup.desk_depth_mm * 100}%`, width: `${size.w / setup.desk_width_mm * 100}%`, height: `${size.d / setup.desk_depth_mm * 100}%`, zIndex: p.type === 'mat' || p.type === 'cork' ? 1 : selectedId === item.instance_id ? 5 : 2 }}
       onClick={() => setSelectedId(item.instance_id)}
       onPointerDown={e => {

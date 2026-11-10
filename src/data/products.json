@@ -150,8 +150,9 @@
     "image_url": "/images/products/edifier-mr3.png",
     "image_source_url": "https://www.edifier.com/int/global/p/studio-monitors/mr3",
     "manufacturer_code": "MR3",
-    "dimension_note": "2개 한 세트를 나란히 붙여 놓은 외곽 면적 251 × 185mm입니다. 한 통의 가로는 125.5mm, 높이는 220mm, 깊이는 액티브 185mm / 패시브 176mm입니다. 좌우를 떨어뜨릴 간격과 케이블·후면 여유, 별도 스탠드 공간은 포함하지 않습니다. 현재 좌우 개별 이동은 지원하지 않습니다.",
-    "image_note": "공식 대표 사진의 색상 기준입니다. 판매처에서 색상과 세트 구성을 확인하세요."
+    "dimension_note": "2개 한 세트를 나란히 붙여 놓은 외곽 면적 251 × 185mm입니다. 한 통의 가로는 125.5mm, 높이는 220mm, 깊이는 액티브 185mm / 패시브 176mm입니다. 좌우를 떨어뜨릴 간격과 케이블·후면 여유, 별도 스탠드 공간은 포함하지 않습니다. 시뮬레이터에서 두 통을 각각 이동하고 회전할 수 있어요.",
+    "image_note": "공식 대표 사진의 색상 기준입니다. 판매처에서 색상과 세트 구성을 확인하세요.",
+    "passive_depth_mm": 176
   },
   {
     "id": "edifier-mr4",
@@ -172,8 +173,9 @@
     "image_url": "/images/products/edifier-mr4.png",
     "image_source_url": "https://www.edifier.com/int/global/p/studio-monitors/mr4",
     "manufacturer_code": "MR4",
-    "dimension_note": "2개 한 세트를 나란히 붙여 놓은 외곽 면적 280 × 197.5mm입니다. 한 통의 가로는 140mm, 높이는 228mm, 깊이는 액티브 197.5mm / 패시브 184mm입니다. 좌우를 떨어뜨릴 간격과 케이블·후면 여유, 별도 스탠드 공간은 포함하지 않습니다. 현재 좌우 개별 이동은 지원하지 않습니다.",
-    "image_note": "공식 대표 사진의 색상 기준입니다. 판매처에서 색상과 세트 구성을 확인하세요."
+    "dimension_note": "2개 한 세트를 나란히 붙여 놓은 외곽 면적 280 × 197.5mm입니다. 한 통의 가로는 140mm, 높이는 228mm, 깊이는 액티브 197.5mm / 패시브 184mm입니다. 좌우를 떨어뜨릴 간격과 케이블·후면 여유, 별도 스탠드 공간은 포함하지 않습니다. 시뮬레이터에서 두 통을 각각 이동하고 회전할 수 있어요.",
+    "image_note": "공식 대표 사진의 색상 기준입니다. 판매처에서 색상과 세트 구성을 확인하세요.",
+    "passive_depth_mm": 184
   },
   {
     "id": "edifier-mr5",
@@ -194,8 +196,9 @@
     "image_url": "/images/products/edifier-mr5.png",
     "image_source_url": "https://www.edifier.com/int/global/p/studio-monitors/mr5",
     "manufacturer_code": "MR5",
-    "dimension_note": "2개 한 세트를 나란히 붙여 놓은 외곽 면적 318 × 280mm입니다. 한 통의 가로는 159mm, 높이는 264mm, 깊이는 액티브 280mm / 패시브 257mm입니다. 좌우를 떨어뜨릴 간격과 케이블·후면 여유, 별도 스탠드 공간은 포함하지 않습니다. 현재 좌우 개별 이동은 지원하지 않습니다.",
-    "image_note": "공식 대표 사진의 색상 기준입니다. 판매처에서 색상과 세트 구성을 확인하세요."
+    "dimension_note": "2개 한 세트를 나란히 붙여 놓은 외곽 면적 318 × 280mm입니다. 한 통의 가로는 159mm, 높이는 264mm, 깊이는 액티브 280mm / 패시브 257mm입니다. 좌우를 떨어뜨릴 간격과 케이블·후면 여유, 별도 스탠드 공간은 포함하지 않습니다. 시뮬레이터에서 두 통을 각각 이동하고 회전할 수 있어요.",
+    "image_note": "공식 대표 사진의 색상 기준입니다. 판매처에서 색상과 세트 구성을 확인하세요.",
+    "passive_depth_mm": 257
   },
   {
     "id": "edifier-mr4-mkii",
@@ -216,8 +219,9 @@
     "image_url": "/images/products/edifier-mr4-mkii.webp",
     "image_source_url": "https://www.edifier.com/int/global/p/studio-monitors/mr4-mkii",
     "manufacturer_code": "MR4 MKII",
-    "dimension_note": "2개 한 세트를 나란히 붙여 놓은 외곽 면적 280 × 229mm입니다. 한 통의 가로는 140mm, 높이는 244mm, 깊이는 액티브 229mm / 패시브 208mm입니다. 좌우를 떨어뜨릴 간격과 케이블·후면 여유, 별도 스탠드 공간은 포함하지 않습니다. 현재 좌우 개별 이동은 지원하지 않습니다.",
-    "image_note": "공식 대표 사진의 색상 기준입니다. 판매처에서 색상과 세트 구성을 확인하세요."
+    "dimension_note": "2개 한 세트를 나란히 붙여 놓은 외곽 면적 280 × 229mm입니다. 한 통의 가로는 140mm, 높이는 244mm, 깊이는 액티브 229mm / 패시브 208mm입니다. 좌우를 떨어뜨릴 간격과 케이블·후면 여유, 별도 스탠드 공간은 포함하지 않습니다. 시뮬레이터에서 두 통을 각각 이동하고 회전할 수 있어요.",
+    "image_note": "공식 대표 사진의 색상 기준입니다. 판매처에서 색상과 세트 구성을 확인하세요.",
+    "passive_depth_mm": 208
   },
   {
     "id": "edifier-m60",
@@ -238,8 +242,9 @@
     "image_url": "/images/products/edifier-m60.png",
     "image_source_url": "https://www.edifier.com/int/global/p/computer-speakers/m60",
     "manufacturer_code": "M60",
-    "dimension_note": "2개 한 세트를 나란히 붙여 놓은 외곽 면적 200 × 147mm입니다. 한 통의 가로는 100mm, 높이는 168mm, 깊이는 액티브 147mm / 패시브 147mm입니다. 좌우를 떨어뜨릴 간격과 케이블·후면 여유, 별도 스탠드 공간은 포함하지 않습니다. 현재 좌우 개별 이동은 지원하지 않습니다.",
-    "image_note": "공식 대표 사진의 색상 기준입니다. 판매처에서 색상과 세트 구성을 확인하세요."
+    "dimension_note": "2개 한 세트를 나란히 붙여 놓은 외곽 면적 200 × 147mm입니다. 한 통의 가로는 100mm, 높이는 168mm, 깊이는 액티브 147mm / 패시브 147mm입니다. 좌우를 떨어뜨릴 간격과 케이블·후면 여유, 별도 스탠드 공간은 포함하지 않습니다. 시뮬레이터에서 두 통을 각각 이동하고 회전할 수 있어요.",
+    "image_note": "공식 대표 사진의 색상 기준입니다. 판매처에서 색상과 세트 구성을 확인하세요.",
+    "passive_depth_mm": 147
   },
   {
     "id": "edifier-m90",
@@ -260,8 +265,9 @@
     "image_url": "/images/products/edifier-m90.png",
     "image_source_url": "https://www.edifier.com/int/global/p/computer-speakers/m90",
     "manufacturer_code": "M90",
-    "dimension_note": "2개 한 세트를 나란히 붙여 놓은 외곽 면적 266 × 225mm입니다. 한 통의 가로는 133mm, 높이는 212mm, 깊이는 액티브 225mm / 패시브 210mm입니다. 좌우를 떨어뜨릴 간격과 케이블·후면 여유, 별도 스탠드 공간은 포함하지 않습니다. 현재 좌우 개별 이동은 지원하지 않습니다.",
-    "image_note": "공식 대표 사진의 색상 기준입니다. 판매처에서 색상과 세트 구성을 확인하세요."
+    "dimension_note": "2개 한 세트를 나란히 붙여 놓은 외곽 면적 266 × 225mm입니다. 한 통의 가로는 133mm, 높이는 212mm, 깊이는 액티브 225mm / 패시브 210mm입니다. 좌우를 떨어뜨릴 간격과 케이블·후면 여유, 별도 스탠드 공간은 포함하지 않습니다. 시뮬레이터에서 두 통을 각각 이동하고 회전할 수 있어요.",
+    "image_note": "공식 대표 사진의 색상 기준입니다. 판매처에서 색상과 세트 구성을 확인하세요.",
+    "passive_depth_mm": 210
   },
   {
     "id": "vertitap-basic",

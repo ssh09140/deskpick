@@ -2,7 +2,7 @@ import { categoryName, subcategoryName, metadata } from '../lib/catalog';
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ArrowUpRight, Check, Plus, ChevronRight } from 'lucide-react';
-import { applyDeskSize, isDeskProduct, money, newItem, products } from '../lib/desk';
+import { applyDeskSize, isDeskProduct, money, newPlacement, products } from '../lib/desk';
 import { ProductArt } from '../components/ProductArt';
 import { ProductCard } from '../components/ProductCard';
 import { useApp } from '../context';
@@ -21,8 +21,8 @@ export function ProductDetail() {
       notify('책상 크기를 적용했어요. 기존 제품 위치는 유지되며 책상 가격은 합계에 포함되지 않아요.');
       return;
     }
-    const item = newItem(p, setup);
-    setSetup(s => ({ ...s, items: [...s.items, item] })); setSelectedId(item.instance_id); navigate('/studio'); notify('책상에 제품을 추가했어요. 드래그해 위치를 바꿔 보세요.');
+    const added = newPlacement(p, setup);
+    setSetup(s => ({ ...s, items: [...s.items, ...added] })); setSelectedId(added[0].instance_id); navigate('/studio'); notify('책상에 제품을 추가했어요. 드래그해 위치를 바꿔 보세요.');
   }
   return <div className="wrap detail-wrap">
     <div className="breadcrumbs"><Link to="/">홈</Link><ChevronRight size={12} /><Link to="/products">제품 탐색</Link><ChevronRight size={12} /><Link to={`/products?category=${metadata(p).category}`}>{categoryName(p)}</Link></div>

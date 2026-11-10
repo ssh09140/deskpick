@@ -1,9 +1,29 @@
 import { describe, expect, it } from 'vitest';
-import { emptySetup, isOutside, newItem, parseSetup, productById, sameSetup, totalPrice } from './desk';
+import { emptySetup, footprint, isOutside, newItem, newPlacement, parseSetup, productById, rotateItem, sameSetup, totalPrice } from './desk';
 
 const keyboard = productById.get('soft-keyboard')!;
 const item = { instance_id: 'one', product_id: keyboard.id, x_mm: 100, y_mm: 200 };
 describe('desk data validation and geometry', () => {
+  it('moves and rotates each MR4 cabinet independently and charges once per pair', () => {
+    const p = productById.get('edifier-mr4')!;
+    const [active, passive] = newPlacement(p, emptySetup());
+    expect(footprint(active)).toEqual({ w: 140, d: 197.5 });
+    expect(passive.x_mm).toBeGreaterThan(active.x_mm + 140);
+    const edited = { ...rotateItem(passive), x_mm: 30, y_mm: 55 };
+    expect(footprint(edited)).toEqual({ w: 184, d: 140 });
+    const setup = { ...emptySetup(), items: [active, edited] };
+    expect(parseSetup(JSON.parse(JSON.stringify(setup)))).toEqual(setup);
+    expect(totalPrice([...setup.items, ...newPlacement(p, setup)])).toBe(p.price * 2);
+  });
+  it('splits an old rotated pair inside its previous bounds and reloads it consistently', () => {
+    const old = { ...emptySetup(), items: [{ ...item, product_id: 'edifier-mr4', rotation: 90 as const }] };
+    const migrated = parseSetup(old);
+    expect(migrated.items).toHaveLength(2);
+    expect(migrated.items[0]).toMatchObject({ x_mm: 100, y_mm: 200, rotation: 90 });
+    expect(migrated.items[1]).toMatchObject({ x_mm: 113.5, y_mm: 340, rotation: 90, passive_of: 'one' });
+    expect(parseSetup(migrated)).toEqual(migrated);
+    expect(sameSetup(migrated, old)).toBe(true);
+  });
   it('round trips the database payload, including negative and fractional positions', () => {
     const setup = { ...emptySetup(), items: [{ ...item, x_mm: -10.5, y_mm: 20.25 }] };
     expect(parseSetup(JSON.parse(JSON.stringify(setup)))).toEqual(setup);

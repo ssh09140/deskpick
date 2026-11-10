@@ -130,3 +130,13 @@ body{background:var(--cream);font-size:15px;letter-spacing:-.025em;line-height:1
 }
 .demo-account dd { margin: 0; overflow-wrap: anywhere; }
 .demo-account p { margin: 8px 0 12px; font-size: 13px; }
+
+.rotated-art > .speaker-unit-mark {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  font-size: 10px;
+  color: #465246;
+}

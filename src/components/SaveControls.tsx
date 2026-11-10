@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { Download, FolderOpen, ArrowRight, Trash2, Check } from 'lucide-react';
 import { useApp } from '../context';
 import { deleteSetup, fetchSetup, friendlyError, saveSetup } from '../lib/supabase';
-import { money, sameSetup, totalPrice, type DeskSetup, type SavedSetup } from '../lib/desk';
+import { purchaseItems, money, sameSetup, totalPrice, type DeskSetup, type SavedSetup } from '../lib/desk';
 import { ErrorNotice } from './ErrorNotice';
 import { Modal } from './Modal';
 import { DeskPreview } from './DeskCanvas';
@@ -74,11 +74,11 @@ export function SaveControls() {
       {activeDialog.type === 'saved' && (activeDialog.data ? <>
         <h2>저장한 나의 책상</h2><p className="auth-copy">{date(activeDialog.data)} 저장 · 계정당 구성 1개</p>
         <div className="saved-preview"><DeskPreview setup={activeDialog.data} /></div>
-        <div className="saved-meta"><strong>{activeDialog.data.desk_width_mm} × {activeDialog.data.desk_depth_mm} mm</strong><span>{activeDialog.data.items.length}개 · {money(totalPrice(activeDialog.data.items))}</span></div>
+        <div className="saved-meta"><strong>{activeDialog.data.desk_width_mm} × {activeDialog.data.desk_depth_mm} mm</strong><span>{purchaseItems(activeDialog.data.items).length}개 · {money(totalPrice(activeDialog.data.items))}</span></div>
         <button className="btn primary full saved-load" onClick={() => setDialog({ type: 'load', data: activeDialog.data! })}>이 구성 불러오기 <ArrowRight size={16} /></button>
         <button className="text-btn delete-link full" onClick={() => setDialog({ type: 'delete', data: activeDialog.data! })}>저장 구성 삭제</button>
       </> : <><h2>아직 저장한 책상이 없어요.</h2><p className="auth-copy">마음에 드는 제품을 배치하고<br />‘내 데스크 저장’을 눌러 주세요.</p><button className="btn primary full" onClick={close}>내 책상으로 돌아가기</button></>)}
-      {activeDialog.type === 'overwrite' && <><h2>지금 구성으로 덮어쓸까요?</h2><p className="auth-copy">{date(activeDialog.data)}에 저장한 구성 대신 지금의 책상을 저장합니다.</p><div className="save-comparison"><div>저장한 구성<strong>{activeDialog.data.items.length}개 · {money(totalPrice(activeDialog.data.items))}</strong></div><ArrowRight size={18} /><div>현재 구성<strong>{activeDialog.draft.items.length}개 · {money(totalPrice(activeDialog.draft.items))}</strong></div></div><div className="dialog-actions"><button className="btn" disabled={busy} onClick={close}>취소</button><button className="btn primary" disabled={busy} onClick={() => commit('save')}>{busy ? '저장 중…' : '현재 구성으로 저장'}</button></div></>}
+      {activeDialog.type === 'overwrite' && <><h2>지금 구성으로 덮어쓸까요?</h2><p className="auth-copy">{date(activeDialog.data)}에 저장한 구성 대신 지금의 책상을 저장합니다.</p><div className="save-comparison"><div>저장한 구성<strong>{purchaseItems(activeDialog.data.items).length}개 · {money(totalPrice(activeDialog.data.items))}</strong></div><ArrowRight size={18} /><div>현재 구성<strong>{purchaseItems(activeDialog.draft.items).length}개 · {money(totalPrice(activeDialog.draft.items))}</strong></div></div><div className="dialog-actions"><button className="btn" disabled={busy} onClick={close}>취소</button><button className="btn primary" disabled={busy} onClick={() => commit('save')}>{busy ? '저장 중…' : '현재 구성으로 저장'}</button></div></>}
       {activeDialog.type === 'load' && <><h2>저장한 구성으로 바꿀까요?</h2><p className="auth-copy">현재 책상 크기와 제품 위치가 바뀝니다. 저장하지 않은 변경사항은 사라져요.</p><div className="dialog-actions"><button className="btn" onClick={close}>취소</button><button className="btn primary" onClick={() => load(activeDialog.data)}>불러오기</button></div></>}
       {activeDialog.type === 'delete' && <><h2>저장한 구성을 삭제할까요?</h2><p className="auth-copy">계정에 저장된 구성을 삭제합니다. 지금 편집 중인 배치는 유지되며, 삭제한 저장 구성은 되돌릴 수 없어요.</p><div className="dialog-actions"><button className="btn" disabled={busy} onClick={close}>취소</button><button className="btn danger" disabled={busy} onClick={() => commit('delete')}><Trash2 size={15} />{busy ? '삭제 중…' : '저장 구성 삭제'}</button></div></>}
       <p className="form-error" role="alert">{error}</p>
