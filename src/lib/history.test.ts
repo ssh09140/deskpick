@@ -3,11 +3,25 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { DeskPreview } from '../components/DeskCanvas';
 import { createHistory, deskHistory } from './history';
+import { snapAxis, snapRotation } from './alignment';
 import { emptySetup, footprint, isOutside, parseSetup, rotateItem, sameSetup, type DeskItem } from './desk';
 
 const item: DeskItem = { instance_id: 'keyboard', product_id: 'apple-mxcl3kh', x_mm: 100, y_mm: 200 };
 const initial = { ...emptySetup(), items: [item] };
 describe('rotation and undo history', () => {
+  it('preserves the center and saved angle at 45 degrees', () => {
+    const turned = rotateItem(item, 45);
+    const diagonalBounds = (278.9 + 114.9) / Math.sqrt(2);
+    expect(footprint(turned).w).toBeCloseTo(diagonalBounds);
+    expect(footprint(turned).d).toBeCloseTo(diagonalBounds);
+    expect(turned.x_mm + diagonalBounds / 2).toBeCloseTo(item.x_mm + 278.9 / 2);
+    expect(parseSetup({ ...initial, items: [turned] }).items).toEqual([turned]);
+  });
+  it('holds nearby right angles and alignment guides until dragged beyond tolerance', () => {
+    expect([85, 86, 90, 94, 95, 178, 358].map(snapRotation)).toEqual([85, 90, 90, 90, 95, 180, 360]);
+    expect(snapAxis(79, 40, [100], 4)).toEqual({ position: 80, guide: 100 });
+    expect(snapAxis(85, 40, [100], 4)).toEqual({ position: 85, guide: undefined });
+  });
   it('renders saved rotated layouts as a diagram, never as a product photo', () => {
     const markup = renderToStaticMarkup(createElement(DeskPreview, { setup: { ...initial, items: [rotateItem(item)] } }));
     expect(markup).toContain('rotate(90deg)');
@@ -29,7 +43,7 @@ describe('rotation and undo history', () => {
     const rotated = { ...initial, items: [rotateItem(item)] };
     expect(parseSetup(JSON.parse(JSON.stringify(rotated)))).toEqual(rotated);
     expect(sameSetup(initial, { ...initial, items: [{ ...item, rotation: 0 }] })).toBe(true);
-    for (const rotation of [45, -90, 360, '90', null]) expect(() => parseSetup({ ...initial, items: [{ ...item, rotation }] })).toThrow();
+    for (const rotation of [NaN, 45.5, -90, 360, '90', null]) expect(() => parseSetup({ ...initial, items: [{ ...item, rotation }] })).toThrow();
     expect(isOutside({ ...item, rotation: 90, x_mm: 0, y_mm: 600 }, initial)).toBe(true);
     expect(isOutside({ ...item, x_mm: 0, y_mm: 600 }, initial)).toBe(false);
   });

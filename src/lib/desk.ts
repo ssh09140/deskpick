@@ -19,7 +19,7 @@ export const categories = ['전체', '모니터 받침대', '키보드 · 마우
 // Keep old sample identities and dimensions for saved layouts; do not silently replace them.
 export const productById = new Map<string, Product>([...legacyData, ...products].map(p => [p.id, p]));
 export const availableCategories = categories.map((name, id) => ({ name, id })).filter(c => c.id === 0 || products.some(p => p.cat === c.id));
-export type DeskItem = { instance_id: string; product_id: string; x_mm: number; y_mm: number; rotation?: 0 | 90 | 180 | 270; passive_of?: string };
+export type DeskItem = { instance_id: string; product_id: string; x_mm: number; y_mm: number; rotation?: number; passive_of?: string };
 export type DeskSetup = { desk_width_mm: number; desk_depth_mm: number; items: DeskItem[] };
 export type SavedSetup = DeskSetup & { user_id: string; created_at: string; updated_at: string };
 export const emptySetup = (): DeskSetup => ({ desk_width_mm: 1400, desk_depth_mm: 800, items: [] });
@@ -38,11 +38,18 @@ export function unitSize(item: DeskItem) {
 }
 export function footprint(item: DeskItem) {
   const p = unitSize(item);
-  return item.rotation === 90 || item.rotation === 270 ? { w: p.d, d: p.w } : { w: p.w, d: p.d };
+  const angle = item.rotation ?? 0;
+  if (angle % 180 === 0) return p;
+  if (angle % 180 === 90) return { w: p.d, d: p.w };
+  const radians = angle * Math.PI / 180;
+  const cos = Math.abs(Math.cos(radians));
+  const sin = Math.abs(Math.sin(radians));
+  return { w: p.w * cos + p.d * sin, d: p.w * sin + p.d * cos };
+
 }
-export function rotateItem(item: DeskItem): DeskItem {
+export function rotateItem(item: DeskItem, angle = (item.rotation ?? 0) + 90): DeskItem {
   const before = footprint(item);
-  const rotated = { ...item, rotation: ((item.rotation ?? 0) + 90) % 360 as DeskItem['rotation'] };
+  const rotated = { ...item, rotation: ((Math.round(angle) % 360) + 360) % 360 };
   const after = footprint(rotated);
   return { ...rotated, x_mm: item.x_mm + (before.w - after.w) / 2, y_mm: item.y_mm + (before.d - after.d) / 2 };
 }
@@ -62,7 +69,7 @@ export function parseSetup(value: unknown): DeskSetup {
     const item = raw as DeskItem;
     if (typeof item.instance_id !== 'string' || !item.instance_id.trim() || ids.has(item.instance_id) || typeof item.product_id !== 'string' || !productById.has(item.product_id) || typeof item.x_mm !== 'number' || typeof item.y_mm !== 'number' || !Number.isFinite(item.x_mm) || !Number.isFinite(item.y_mm)) throw new Error('저장된 구성에 지원하지 않는 제품이나 잘못된 좌표가 있어요. 현재 배치는 유지됩니다.');
     ids.add(item.instance_id);
-    if (item.rotation !== undefined && ![0, 90, 180, 270].includes(item.rotation)) throw new Error('저장된 제품의 회전 각도가 올바르지 않아요.');
+    if (item.rotation !== undefined && (!Number.isInteger(item.rotation) || item.rotation < 0 || item.rotation >= 360)) throw new Error('저장된 제품의 회전 각도가 올바르지 않아요.');
     if (item.passive_of !== undefined && (typeof item.passive_of !== 'string' || !item.passive_of)) throw new Error('스피커 세트 정보가 올바르지 않아요.');
     return { instance_id: item.instance_id, product_id: item.product_id, x_mm: item.x_mm, y_mm: item.y_mm, ...(item.rotation ? { rotation: item.rotation } : {}), ...(item.passive_of ? { passive_of: item.passive_of } : {}) };
   });

@@ -21,7 +21,7 @@ beforeEach(() => {
 });
 describe('account-scoped persistence (mocked SDK, not live RLS)', () => {
   it('keeps rotation in both the saved payload and the fetched layout', async () => {
-    const items = [{ instance_id: 'rotated', product_id: 'apple-mxcl3kh', x_mm: 82.5, y_mm: 10.25, rotation: 90 as const }];
+    const items = [{ instance_id: 'rotated', product_id: 'apple-mxcl3kh', x_mm: 82.5, y_mm: 10.25, rotation: 37 as const }];
     const row = { ...saved, items };
     mock.query.single.mockResolvedValue({ data: row, error: null });
     mock.query.maybeSingle.mockResolvedValue({ data: row, error: null });

@@ -87,7 +87,7 @@ npm run preview  # 빌드 결과 로컬 확인
 
 - 컬럼: `user_id`, `desk_width_mm`, `desk_depth_mm`, `items`, `created_at`, `updated_at`
 - `user_id`: 회원당 1개 구성의 기본 키, `auth.users` 삭제 시 cascade
-- `items`: `{ instance_id, product_id, x_mm, y_mm, rotation? }` 배열. 회전은 0·90·180·270도이며 생략 시 0도
+- `items`: `{ instance_id, product_id, x_mm, y_mm, rotation? }` 배열. 회전은 0~359도 정수이며 생략 시 0도
 - 본인 행만 조회·추가·수정·삭제할 수 있는 RLS 정책과 비회원 접근 제한 필요
 - 생성·수정 시각은 DB에서 관리
 

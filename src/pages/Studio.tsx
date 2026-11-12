@@ -5,14 +5,15 @@ import { useApp } from '../context';
 import { footprint, rotateItem, isOutside, money, newPlacement, purchaseItems, itemLabel, unitSize, productById, placeableProducts, totalPrice, type DeskItem } from '../lib/desk';
 import { ProductArt } from '../components/ProductArt';
 import { Modal } from '../components/Modal';
+import { RotationControl } from '../components/RotationControl';
 import { DeskCanvas } from '../components/DeskCanvas';
 import { SaveControls } from '../components/SaveControls';
 
 function PositionEditor({ item }: { item: DeskItem }) {
   const { setSetup } = useApp();
-  const [x, setX] = useState(String(item.x_mm));
-  const [y, setY] = useState(String(item.y_mm));
-  useEffect(() => { setX(String(item.x_mm)); setY(String(item.y_mm)); }, [item.x_mm, item.y_mm]);
+  const [x, setX] = useState(String(Number(item.x_mm.toFixed(2))));
+  const [y, setY] = useState(String(Number(item.y_mm.toFixed(2))));
+  useEffect(() => { setX(String(Number(item.x_mm.toFixed(2)))); setY(String(Number(item.y_mm.toFixed(2)))); }, [item.x_mm, item.y_mm]);
   function submit(e: FormEvent) { e.preventDefault(); if (!x.trim() || !y.trim() || !Number.isFinite(Number(x)) || !Number.isFinite(Number(y))) return; setSetup(s => ({ ...s, items: s.items.map(i => i.instance_id === item.instance_id ? { ...i, x_mm: Number(x), y_mm: Number(y) } : i) })); }
   return <form className="position-form" onSubmit={submit}><label>X 위치 (mm)<input type="number" step="any" required value={x} onChange={e => setX(e.target.value)} /></label><label>Y 위치 (mm)<input type="number" step="any" required value={y} onChange={e => setY(e.target.value)} /></label><button className="btn" type="submit">위치 적용</button></form>;
 }
@@ -59,7 +60,7 @@ export function Studio() {
           <button className="btn" disabled={!canUndo} onClick={undo} title="Ctrl/Cmd + Z"><Undo2 size={17} /> 실행 취소</button>
           <button className="btn" disabled={!canRedo} onClick={redo} title="Ctrl/Cmd + Shift + Z"><Redo2 size={17} /> 다시 실행</button>
           <button className="btn" disabled={!selected} onClick={() => setSetup(s => ({ ...s, items: s.items.map(i => i.instance_id === selectedId ? rotateItem(i) : i) }))}><RotateCw size={17} /> 90° 회전</button>
-          <span>{selected ? `선택 제품 ${selected.rotation ?? 0}°` : '회전할 제품을 선택하세요'}</span>
+          <RotationControl item={selected} />
         </div>
         <DeskCanvas />
         <div className="canvas-quick-actions"><button className="btn primary" onClick={() => { setSearch(''); setAddOpen(true); }}><Plus size={16} /> 제품 추가</button><Link className="btn" to="/guide">사용 가이드 <ArrowUpRight size={16} /></Link></div>
@@ -67,7 +68,7 @@ export function Studio() {
         {warnings.length > 0 && <div className="status warn" role="status"><Info size={15} /> {warnings.length}개 제품이 책상 영역을 벗어났어요. 목록에서 선택해 위치를 조정해 주세요.</div>}
       </section>
       <aside className="panel layout-info"><div className="price-summary"><div className="summary-caption"><strong>총 예상 가격</strong><span>제품 {purchaseItems(setup.items).length}개</span></div><div className="total-price" aria-live="polite">{money(totalPrice(setup.items))}</div><p>{setup.items.some(i => productById.get(i.product_id)?.sample) ? '기존 예시 상품 가격이 포함된 합계예요.' : '확인일 기준 합계 · 실시간 가격이 아니에요.'}<br />배송비와 할인은 포함하지 않습니다.</p></div><h2>배치 정보</h2>
-        {selected && selectedProduct ? <><div className="info-product-art"><ProductArt product={selectedProduct} /></div><h3>{itemLabel(selected)}</h3><p className="info-dim">배치 가로 {footprint(selected).w} mm · 깊이 {footprint(selected).d} mm · {selected.rotation ?? 0}°</p>{selectedProduct.dimension_note && <p className="info-dim">{selectedProduct.dimension_note}</p>}<PositionEditor key={selected.instance_id} item={selected} /><div className={`status ${isOutside(selected, setup) ? 'warn' : ''}`}>{isOutside(selected, setup) ? <><Info size={14} /> 책상 영역을 벗어났어요</> : <><Check size={14} /> 책상 안에 배치되었어요</>}</div><button className="text-btn" onClick={() => setSetup(s => ({ ...s, items: s.items.map(i => i.instance_id === selected.instance_id ? { ...i, x_mm: Math.round((s.desk_width_mm - footprint(i).w) / 2), y_mm: Math.round((s.desk_depth_mm - footprint(i).d) / 2) } : i) }))}>책상 가운데로 이동</button><Link className="btn" to={`/products/${selectedProduct.id}`}>제품 상세보기 <ArrowUpRight size={15} /></Link></> : <div className="selection-placeholder"><Move size={24} /><p>제품을 선택하면 크기와<br />배치 상태를 확인할 수 있어요.</p></div>}
+        {selected && selectedProduct ? <><div className="info-product-art"><ProductArt product={selectedProduct} /></div><h3>{itemLabel(selected)}</h3><p className="info-dim">배치 가로 {Number(footprint(selected).w.toFixed(1))} mm · 깊이 {Number(footprint(selected).d.toFixed(1))} mm · {selected.rotation ?? 0}°</p>{selectedProduct.dimension_note && <p className="info-dim">{selectedProduct.dimension_note}</p>}<PositionEditor key={selected.instance_id} item={selected} /><div className={`status ${isOutside(selected, setup) ? 'warn' : ''}`}>{isOutside(selected, setup) ? <><Info size={14} /> 책상 영역을 벗어났어요</> : <><Check size={14} /> 책상 안에 배치되었어요</>}</div><button className="text-btn" onClick={() => setSetup(s => ({ ...s, items: s.items.map(i => i.instance_id === selected.instance_id ? { ...i, x_mm: Math.round((s.desk_width_mm - footprint(i).w) / 2), y_mm: Math.round((s.desk_depth_mm - footprint(i).d) / 2) } : i) }))}>책상 가운데로 이동</button><Link className="btn" to={`/products/${selectedProduct.id}`}>제품 상세보기 <ArrowUpRight size={15} /></Link></> : <div className="selection-placeholder"><Move size={24} /><p>제품을 선택하면 크기와<br />배치 상태를 확인할 수 있어요.</p></div>}
         <p className="mobile-help">위에서 본 설치 면적을 같은 축척으로 비교해요. 제품 높이, 물체 간 겹침, 케이블 공간은 별도로 확인해 주세요.</p>
       </aside>
     </div>
