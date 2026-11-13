@@ -13,14 +13,14 @@ export const isDeskProduct = (p: Product) => p.type === 'desk';
 export const placeableProducts = products.filter(p => !isDeskProduct(p));
 export function applyDeskSize(setup: DeskSetup, product: Product): DeskSetup {
   if (!isDeskProduct(product)) throw new Error('책상 상품을 선택해 주세요.');
-  return { ...setup, desk_width_mm: product.w, desk_depth_mm: product.d };
+  return { ...setup, desk_product_id: product.id, desk_width_mm: product.w, desk_depth_mm: product.d };
 }
 export const categories = ['전체', '모니터 받침대', '키보드 · 마우스', '조명', '데스크매트', '수납 · 정리', '데스크 소품', '책상', '오디오·마이크', '충전·연결'];
 // Keep old sample identities and dimensions for saved layouts; do not silently replace them.
 export const productById = new Map<string, Product>([...legacyData, ...products].map(p => [p.id, p]));
 export const availableCategories = categories.map((name, id) => ({ name, id })).filter(c => c.id === 0 || products.some(p => p.cat === c.id));
 export type DeskItem = { instance_id: string; product_id: string; x_mm: number; y_mm: number; rotation?: number; passive_of?: string };
-export type DeskSetup = { desk_width_mm: number; desk_depth_mm: number; items: DeskItem[] };
+export type DeskSetup = { desk_product_id?: string; desk_width_mm: number; desk_depth_mm: number; items: DeskItem[] };
 export type SavedSetup = DeskSetup & { user_id: string; created_at: string; updated_at: string };
 export const emptySetup = (): DeskSetup => ({ desk_width_mm: 1400, desk_depth_mm: 800, items: [] });
 export const money = (n: number) => `₩${n.toLocaleString('ko-KR')}`;
@@ -47,6 +47,11 @@ export function footprint(item: DeskItem) {
   return { w: p.w * cos + p.d * sin, d: p.w * sin + p.d * cos };
 
 }
+export function placementCenter(item: DeskItem) {
+  const bounds = footprint(item);
+  return { x: item.x_mm + bounds.w / 2, y: item.y_mm + bounds.d / 2 };
+}
+
 export function rotateItem(item: DeskItem, angle = (item.rotation ?? 0) + 90): DeskItem {
   const before = footprint(item);
   const rotated = { ...item, rotation: ((Math.round(angle) % 360) + 360) % 360 };
@@ -89,7 +94,9 @@ export function parseSetup(value: unknown): DeskSetup {
     ids.add(id);
     return splitSpeaker(item, id);
   });
-  return { desk_width_mm: s.desk_width_mm as number, desk_depth_mm: s.desk_depth_mm as number, items: expanded };
+  const desk = typeof s.desk_product_id === 'string' ? productById.get(s.desk_product_id) : undefined;
+  const selectedDesk = desk && isDeskProduct(desk) && desk.w === s.desk_width_mm && desk.d === s.desk_depth_mm;
+  return { ...(selectedDesk ? { desk_product_id: desk.id } : {}), desk_width_mm: s.desk_width_mm as number, desk_depth_mm: s.desk_depth_mm as number, items: expanded };
 }
 export const sameSetup = (a: DeskSetup, b: DeskSetup) => JSON.stringify(parseSetup(a)) === JSON.stringify(parseSetup(b));
 export function newItem(product: Product, setup: DeskSetup): DeskItem {

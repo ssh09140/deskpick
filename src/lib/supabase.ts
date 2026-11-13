@@ -30,7 +30,7 @@ export async function fetchSetup(userId: string): Promise<SavedSetup | null> {
 }
 export async function saveSetup(userId: string, setup: DeskSetup): Promise<SavedSetup> {
   const { client } = await requireUser(userId);
-  const { data, error } = await client.from('desk_setups').upsert({ user_id: userId, ...parseSetup(setup) }, { onConflict: 'user_id' }).select().single();
+  const { data, error } = await client.from('desk_setups').upsert({ user_id: userId, desk_product_id: null, ...parseSetup(setup) }, { onConflict: 'user_id' }).select().single();
   if (error) throw error;
   return parseSaved(data);
 }

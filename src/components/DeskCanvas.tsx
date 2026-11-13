@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { footprint, unitSize, itemLabel, isOutside, productById, type DeskItem, type DeskSetup } from '../lib/desk';
+import { placementCenter, footprint, unitSize, itemLabel, isOutside, productById, type DeskItem, type DeskSetup } from '../lib/desk';
 import { ProductArt } from './ProductArt';
 import { snapAxis } from '../lib/alignment';
 import { useApp } from '../context';
@@ -30,9 +30,9 @@ export function DeskCanvas() {
   const move = (id: string, x: number, y: number) => setSetup(s => ({ ...s, items: s.items.map(i => i.instance_id === id ? { ...i, x_mm: x, y_mm: y } : i) }));
   return <div className="desk-viewport"><div className="desk" ref={desk} role="group" aria-label="위에서 본 내 책상" style={{ aspectRatio: `${setup.desk_width_mm}/${setup.desk_depth_mm}` }}>
     {!setup.items.length && <div className="desk-empty"><span>YOUR DESK, YOUR WAY</span><p>좋아하는 제품을 하나 놓아볼까요?</p></div>}
-    {setup.items.map(item => { const p = productById.get(item.product_id)!; const out = isOutside(item, setup); const size = footprint(item); const unit = unitSize(item); return <button type="button" key={item.instance_id} className={`object ${selectedId === item.instance_id ? 'chosen' : ''} ${out ? 'outside' : ''}`}
+    {setup.items.map(item => { const p = productById.get(item.product_id)!; const out = isOutside(item, setup); const center = placementCenter(item); const size = footprint(item); const unit = unitSize(item); return <button type="button" key={item.instance_id} className={`object ${selectedId === item.instance_id ? 'chosen' : ''} ${out ? 'outside' : ''}`}
       aria-label={`${itemLabel(item)}, 방향키로 이동${out ? ', 책상 밖' : ''}`} aria-pressed={selectedId === item.instance_id}
-      style={{ left: `${(item.x_mm + size.w / 2) / setup.desk_width_mm * 100}%`, top: `${(item.y_mm + size.d / 2) / setup.desk_depth_mm * 100}%`, width: `${unit.w / setup.desk_width_mm * 100}%`, height: `${unit.d / setup.desk_depth_mm * 100}%`, transform: `translate(-50%, -50%) rotate(${item.rotation ?? 0}deg)`, zIndex: p.type === 'mat' || p.type === 'cork' ? 1 : selectedId === item.instance_id ? 5 : 2 }}
+      style={{ left: `${center.x / setup.desk_width_mm * 100}%`, top: `${center.y / setup.desk_depth_mm * 100}%`, width: `${unit.w / setup.desk_width_mm * 100}%`, height: `${unit.d / setup.desk_depth_mm * 100}%`, transform: `translate(-50%, -50%) rotate(${item.rotation ?? 0}deg)`, zIndex: p.type === 'mat' || p.type === 'cork' ? 1 : selectedId === item.instance_id ? 5 : 2 }}
       onClick={() => setSelectedId(item.instance_id)}
       onPointerDown={e => {
         if (e.button !== 0 || drag.current) return;

@@ -6,6 +6,7 @@ import { footprint, rotateItem, isOutside, money, newPlacement, purchaseItems, i
 import { ProductArt } from '../components/ProductArt';
 import { Modal } from '../components/Modal';
 import { RotationControl } from '../components/RotationControl';
+import { DeskPreview } from '../components/DeskPreview';
 import { DeskCanvas } from '../components/DeskCanvas';
 import { SaveControls } from '../components/SaveControls';
 
@@ -21,6 +22,7 @@ export function Studio() {
   const { setup, setSetup, selectedId, setSelectedId, notify, undo, redo, canUndo, canRedo } = useApp();
   const [width, setWidth] = useState(String(setup.desk_width_mm));
   const [depth, setDepth] = useState(String(setup.desk_depth_mm));
+  const [previewOpen, setPreviewOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [clearOpen, setClearOpen] = useState(false);
@@ -38,7 +40,7 @@ export function Studio() {
     return () => window.removeEventListener('keydown', shortcut);
   }, [undo, redo]);
   const warnings = setup.items.filter(i => isOutside(i, setup));
-  function resize(e: FormEvent) { e.preventDefault(); const w = Number(width), d = Number(depth); if (!Number.isInteger(w) || !Number.isInteger(d) || w < 100 || w > 10000 || d < 100 || d > 10000) return; setSetup(s => ({ ...s, desk_width_mm: w, desk_depth_mm: d })); notify('책상 크기를 변경했어요. 제품의 실제 크기와 위치는 유지됩니다.'); }
+  function resize(e: FormEvent) { e.preventDefault(); const w = Number(width), d = Number(depth); if (!Number.isInteger(w) || !Number.isInteger(d) || w < 100 || w > 10000 || d < 100 || d > 10000) return; setSetup(s => w === s.desk_width_mm && d === s.desk_depth_mm ? s : { items: s.items, desk_width_mm: w, desk_depth_mm: d }); notify('책상 크기를 변경했어요. 제품의 실제 크기와 위치는 유지됩니다.'); }
   function add(id: string) { const added = newPlacement(productById.get(id)!, setup); setSetup(s => ({ ...s, items: [...s.items, ...added] })); setSelectedId(added[0].instance_id); setAddOpen(false); notify('제품을 추가했어요.'); }
   function remove(item: DeskItem) {
     const group = item.passive_of ?? item.instance_id;
@@ -63,7 +65,7 @@ export function Studio() {
           <RotationControl item={selected} />
         </div>
         <DeskCanvas />
-        <div className="canvas-quick-actions"><button className="btn primary" onClick={() => { setSearch(''); setAddOpen(true); }}><Plus size={16} /> 제품 추가</button><Link className="btn" to="/guide">사용 가이드 <ArrowUpRight size={16} /></Link></div>
+        <div className="canvas-quick-actions"><button className="btn" onClick={() => setPreviewOpen(true)}>3D 미리보기</button><button className="btn primary" onClick={() => { setSearch(''); setAddOpen(true); }}><Plus size={16} /> 제품 추가</button><Link className="btn" to="/guide">사용 가이드 <ArrowUpRight size={16} /></Link></div>
         <div className="canvas-hint"><Move size={16} /><p>제품을 드래그해 이동하세요.<br />방향키로 10 mm씩, Shift + 방향키로 50 mm씩 조정할 수 있어요.</p></div>
         {warnings.length > 0 && <div className="status warn" role="status"><Info size={15} /> {warnings.length}개 제품이 책상 영역을 벗어났어요. 목록에서 선택해 위치를 조정해 주세요.</div>}
       </section>
@@ -72,6 +74,7 @@ export function Studio() {
         <p className="mobile-help">위에서 본 설치 면적을 같은 축척으로 비교해요. 제품 높이, 물체 간 겹침, 케이블 공간은 별도로 확인해 주세요.</p>
       </aside>
     </div>
+    {previewOpen && <Modal title="책상 3D 미리보기" onClose={() => setPreviewOpen(false)} wide><DeskPreview setup={setup}/></Modal>}
     {addOpen && <Modal title="책상에 놓을 제품 선택" onClose={() => setAddOpen(false)} wide><p className="eyebrow">ADD YOUR FAVORITES</p><h2>책상에 무엇을 놓을까요?</h2><p className="auth-copy">같은 제품도 여러 개 배치할 수 있어요. 실물 사진과 최신 가격은 판매처에서 확인해 주세요.</p><label className="field"><input aria-label="추가할 제품 검색" placeholder="제품 이름으로 검색" value={search} onChange={e => setSearch(e.target.value)} /></label><div className="add-grid">{placeableProducts.filter(p => p.name.includes(search.trim())).map(p => <button key={p.id} onClick={() => add(p.id)}><div className="mini-art"><ProductArt product={p} /></div><div><strong>{p.name}</strong><small>{p.w} × {p.d} mm · {money(p.price)}</small></div><Plus size={16} /></button>)}</div>{!placeableProducts.some(p => p.name.includes(search.trim())) && <p className="auth-copy">검색 결과가 없어요.</p>}</Modal>}
     {clearOpen && <Modal title="현재 배치 비우기" onClose={() => setClearOpen(false)}><h2>현재 배치를 비울까요?</h2><p className="auth-copy">화면에 배치한 제품을 모두 제거합니다. 계정에 저장한 구성은 유지돼요.</p><div className="dialog-actions"><button className="btn" onClick={() => setClearOpen(false)}>취소</button><button className="btn danger" onClick={() => { setSetup(s => ({ ...s, items: [] })); setSelectedId(null); setClearOpen(false); }}>배치 비우기</button></div></Modal>}
   </div>;

@@ -26,7 +26,7 @@ describe('account-scoped persistence (mocked SDK, not live RLS)', () => {
     mock.query.single.mockResolvedValue({ data: row, error: null });
     mock.query.maybeSingle.mockResolvedValue({ data: row, error: null });
     expect(await saveSetup('user-a', { ...emptySetup(), items })).toEqual(row);
-    expect(mock.query.upsert).toHaveBeenCalledWith({ user_id: 'user-a', ...emptySetup(), items }, { onConflict: 'user_id' });
+    expect(mock.query.upsert).toHaveBeenCalledWith({ user_id: 'user-a', desk_product_id: null, ...emptySetup(), items }, { onConflict: 'user_id' });
     expect((await fetchSetup('user-a'))?.items).toEqual(items);
   });
   it('refuses writes if the signed-in user changed', async () => {
@@ -35,7 +35,7 @@ describe('account-scoped persistence (mocked SDK, not live RLS)', () => {
   });
   it('upserts the precise schema without client-supplied timestamps', async () => {
     expect(await saveSetup('user-a', emptySetup())).toEqual(saved);
-    expect(mock.query.upsert).toHaveBeenCalledWith({ user_id: 'user-a', ...emptySetup() }, { onConflict: 'user_id' });
+    expect(mock.query.upsert).toHaveBeenCalledWith({ user_id: 'user-a', desk_product_id: null, ...emptySetup() }, { onConflict: 'user_id' });
     expect(mock.query.single).toHaveBeenCalled();
   });
   it('scopes reads to the current user and supports the no-saved-layout case', async () => {
