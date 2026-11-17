@@ -43,3 +43,25 @@ it.each(products)('renders the current catalog model $id with its stored layout'
   expect(html).not.toMatch(/NaN|Infinity/);
   expect(html).toContain('dp-face');
 });
+
+it('lifts each supported item independently, including on a turned shelf', () => {
+  const setup = emptySetup();
+  const shelf = { instance_id: 'shelf', product_id: 'ilian-basic-medium-black', x_mm: 100, y_mm: 0, rotation: 90 };
+  const speaker = { instance_id: 'a', product_id: 'edifier-mr4', x_mm: 100, y_mm: 100 };
+  const passive = { ...speaker, instance_id: 'p', passive_of: 'a', x_mm: 300 };
+  const clock = { instance_id: 'clock', product_id: 'divoom-times-gate', x_mm: 150, y_mm: 350, rotation: 90 };
+  setup.items = [speaker, passive, clock, shelf];
+  const html = render(setup);
+  expect(html).toContain('translate3d(-530px,-110px,-201.25px)');
+  expect(html).toContain('translate3d(-330px,0px,-208px)');
+  expect(html).toContain('translate3d(-526.5px,-110px,91.5px)');
+  expect(render({ ...setup, items: [speaker, clock] })).not.toContain(',-110px,');
+});
+
+it('supports an MR5 deeper than the shelf when its centre is over the top', () => {
+  const setup = emptySetup();
+  const shelf = { instance_id: 'shelf', product_id: 'ilian-basic-medium-black', x_mm: 300, y_mm: 40 };
+  const speaker = { instance_id: 'active', product_id: 'edifier-mr5', x_mm: 421, y_mm: 18 };
+  expect(render({ ...setup, items: [speaker, shelf] })).toContain('translate3d(-199.5px,-110px,-242px)');
+  expect(render({ ...setup, items: [shelf, { ...speaker, y_mm: 150 }] })).toContain('translate3d(-199.5px,0px,-110px)');
+});

@@ -32,7 +32,7 @@ export function DeskCanvas() {
     {!setup.items.length && <div className="desk-empty"><span>YOUR DESK, YOUR WAY</span><p>좋아하는 제품을 하나 놓아볼까요?</p></div>}
     {setup.items.map(item => { const p = productById.get(item.product_id)!; const out = isOutside(item, setup); const center = placementCenter(item); const size = footprint(item); const unit = unitSize(item); return <button type="button" key={item.instance_id} className={`object ${selectedId === item.instance_id ? 'chosen' : ''} ${out ? 'outside' : ''}`}
       aria-label={`${itemLabel(item)}, 방향키로 이동${out ? ', 책상 밖' : ''}`} aria-pressed={selectedId === item.instance_id}
-      style={{ left: `${center.x / setup.desk_width_mm * 100}%`, top: `${center.y / setup.desk_depth_mm * 100}%`, width: `${unit.w / setup.desk_width_mm * 100}%`, height: `${unit.d / setup.desk_depth_mm * 100}%`, transform: `translate(-50%, -50%) rotate(${item.rotation ?? 0}deg)`, zIndex: p.type === 'mat' || p.type === 'cork' ? 1 : selectedId === item.instance_id ? 5 : 2 }}
+      style={{ left: `${center.x / setup.desk_width_mm * 100}%`, top: `${center.y / setup.desk_depth_mm * 100}%`, width: `${unit.w / setup.desk_width_mm * 100}%`, height: `${unit.d / setup.desk_depth_mm * 100}%`, transform: `translate(-50%, -50%) rotate(${item.rotation ?? 0}deg)`, zIndex: p.type === 'mat' || p.type === 'cork' ? 1 : p.type === 'stand' ? 2 : selectedId === item.instance_id ? 5 : 3 }}
       onClick={() => setSelectedId(item.instance_id)}
       onPointerDown={e => {
         if (e.button !== 0 || drag.current) return;
